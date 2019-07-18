@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { LevelPage } from './level.page';
+import { EnterCodePage } from './enter-code.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: LevelPage
+    component: EnterCodePage
   }
 ];
 
@@ -19,9 +19,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [LevelPage]
+  declarations: [EnterCodePage]
 })
-export class LevelPageModule {}
+export class EnterCodePageModule {}

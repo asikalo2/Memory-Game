@@ -1,7 +1,10 @@
+.header-title {
+    color: #3498db;
+}
 .container{
     padding: 3%;
-    display: flex;
-    align-items: center;
+    
+    
 }
 
 .title{
@@ -16,36 +19,17 @@
     font-size: 150%;
 }
 
-.easy-game-btn{
-    margin-left: 15%;
-    margin-top: 30%;
-    height: 15%;
-    width: 70%;
-    border-radius: 25px;
-    size: large;
-    display: inline-block;
-    background-color: #3498db;
-    color: white;
+.select-label {
+  font-weight: bold;
+  font-size: 1.1em;
 }
 
-.medium-game-btn{
-    margin-left: 15%;
-    margin-top: 10%;
-    height: 15%;
-    width: 70%;
-    border-radius: 25px;
-    display: inline-block;
-    background-color: #3498db;
-    color: white;
+ion-content {
+    --padding-top:10%;
+    --padding-end:5%;
+    --padding-start:5%;
 }
 
-.hard-game-btn{
-    margin-left: 15%;
-    margin-top: 10%;
-    height: 15%;
-    width: 70%;
-    border-radius: 25px;
-    display: inline-block;
-    background-color: #3498db;
-    color: white;
+.start-game-btn {
+    margin-top: 10px;
 }
