@@ -1,4 +1,6 @@
 export class User{
     username: string;
-    currentPlayer: boolean; 
+    levelType: number;
+    playerCount: number;
+   
 }
