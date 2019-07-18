@@ -17,7 +17,9 @@ var colors = [
   '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-function connect(event) {
+
+//Kada pokrenemo novu igru
+function newGame(event) {
   if (event) {
     event.preventDefault();
   }
@@ -30,25 +32,64 @@ function connect(event) {
     var socket = new SockJS('/ws');
     stompClient = window.Stomp.over(socket);
     stompClient.debug = null;
-    stompClient.connect({}, onConnected, onError);
+    stompClient.connect({}, onConnectedNewGame, onError);
   }
 }
 
-
-function onConnected() {
+//Ovo se poziva na click new game
+function onConnectedNewGame() {
   connected = true;
 
   // Subscribe to the Public Topic
-  stompClient.subscribe('/topic/public', onMessageReceived);
+  stompClient.subscribe('/topic/newGame', onKeyReceived);
 
   // Tell your username to the server
-  stompClient.send("/app/chat/addUser",
+  stompClient.send("/app/memory/getKey",
       {},
-      JSON.stringify({sender: username, type: 'JOIN'})
+      JSON.stringify({sender: username})
       );
 
   logArea.classList.add('hidden');
 }
+
+function joinGame(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  username = document.querySelector('#name').value.trim();
+  if (username) {
+    usernamePage.classList.add('hidden');
+    chatPage.classList.remove('hidden');
+
+    var socket = new SockJS('/ws');
+    stompClient = window.Stomp.over(socket);
+    stompClient.debug = null;
+    stompClient.connect({}, onConnectedJoinGame, onError);
+  }
+}
+
+//Ovo se poziva na click new game
+function onConnectedJoinGame() {
+  connected = true;
+  
+  var user="ja";
+  // Subscribe to the Public Topic
+  
+  //Ovdje stavimo key koji player ukuca
+  stompClient.subscribe('/topic/group-id'+username, onGameStarted);
+
+  // Tell your username to the server
+  stompClient.send("/app/memory/loadGame",
+      {},
+      JSON.stringify({key:username, username: user})
+      );
+
+  logArea.classList.add('hidden');
+}
+
+
+
 
 
 function onError(error) {
@@ -80,6 +121,24 @@ function sendMessage(event) {
   }
 }
 
+function onKeyReceived(payload) {
+  var key = JSON.parse(payload.body);
+  console.log(key.key);
+  
+  //Ovdje stavimo key koji mu server vrati
+  stompClient.subscribe('/topic/group-id'+key.key, onGameStarted);
+  
+    stompClient.send("/app/memory/loadGame",
+      {},
+      JSON.stringify({key: key.key, username: "prvi", status:1, level:1})
+      );
+}
+
+function onGameStarted(payload) {
+  var game = JSON.parse(payload.body);
+    console.log(game);
+    
+}
 
 function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
@@ -129,5 +188,10 @@ function getAvatarColor(messageSender) {
   return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true);
+document.getElementById('submit1').addEventListener('click', newGame, true);
+
+document.getElementById('submit2').addEventListener('click', joinGame, true);
+
+//usernameForm.addEventListener('submit', connect, true);
+
 messageForm.addEventListener('submit', sendMessage, true);
