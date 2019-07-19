@@ -9,6 +9,7 @@ import { GameService } from '../shared/game.service';
 })
 export class KeyListPage implements OnInit {
 
+  
   constructor(
     private router: Router,
     public _gameService: GameService
@@ -18,6 +19,14 @@ export class KeyListPage implements OnInit {
   }
 
   nextPage() {
+    console.log(this._gameService.gameStarter);
+  if(this._gameService.gameStarter.username !== '')
+  {
+    this.router.navigate(['/game']);
+  }
+  else{
     this.router.navigate(['/enter-code']);
+  }
+  
   }
 }

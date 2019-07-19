@@ -19,8 +19,8 @@ export class LevelPage implements OnInit {
     private formBuilder: FormBuilder
   ) {
     this.gameForm = new FormGroup({
-      selectDiff: new FormControl(2, [Validators.required]),
-      selectPlayer: new FormControl(4, [Validators.required])
+      selectDiff: new FormControl(4, [Validators.required]),
+      selectPlayer: new FormControl(2, [Validators.required])
     });
   }
 
@@ -44,7 +44,7 @@ export class LevelPage implements OnInit {
 this.playersNumber = this.gameForm.get('selectPlayer').value;
 this.rowsNumber = this.gameForm.get('selectDiff').value;
 
-this._gameService.setGameProperties (this.rowsNumber, this.playersNumber);
+this._gameService.setGameProperties ( this.rowsNumber, this.playersNumber);
 this.router.navigate(['/key-list']);
   }
 
