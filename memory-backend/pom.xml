@@ -40,6 +40,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <!--HASHID-->
+       <dependency>
+           <groupId>org.hashids</groupId>
+           <artifactId>hashids</artifactId>
+           <version>1.0.3</version>
+       </dependency>
     </dependencies>
 
     <build>

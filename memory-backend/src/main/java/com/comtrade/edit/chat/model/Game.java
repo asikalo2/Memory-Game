@@ -5,6 +5,8 @@
  */
 package com.comtrade.edit.chat.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -12,21 +14,49 @@ import java.util.Vector;
  * @author user
  */
 public class Game {
-
-    private int key;
+   
     private String username;
-    private int status;
-    private int level;
+    private int numberOfPlayers;
+    private int rows;
     private Vector gameField = new Vector();
+    private ArrayList<User> users = new ArrayList<User>();
+    private String gameCode;
 
     
-    public int getKey() {
-        return key;
+    
+    public ArrayList<User> getUsers() {
+        return users;
     }
 
-    public void setKey(int key) {
-        this.key = key;
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
     }
+    public String getGameCode() {
+        return gameCode;
+    }
+
+    public void setGameCode(String gameCode) {
+        this.gameCode = gameCode;
+    }
+
+   
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public void setNumberOfPlayers(int numberOfPlayers) {
+        this.numberOfPlayers = numberOfPlayers;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
     public void setGameField(Vector gameField) {
         this.gameField = gameField;
     }
@@ -42,20 +72,5 @@ public class Game {
        this.username=username;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-    
-    public int getLevel() {
-        return level;
-    }
-    
-    public void setLevel(int level) {
-        this.level = level;
-    }
     
 }
