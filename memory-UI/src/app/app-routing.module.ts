@@ -7,6 +7,7 @@ const routes: Routes = [
   { path: 'level', loadChildren: './level/level.module#LevelPageModule' },
   { path: 'key-list', loadChildren: './key-list/key-list.module#KeyListPageModule' },
   { path: 'enter-code', loadChildren: './enter-code/enter-code.module#EnterCodePageModule' },
+  { path: 'game', loadChildren: './game/game.module#GamePageModule' },
 
 ];
 
