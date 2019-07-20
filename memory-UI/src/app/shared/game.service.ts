@@ -55,6 +55,33 @@ export class GameService {
   });
  }
 
+ joinPlayer(userCode: string, username: string) {
+
+  let ws = new SockJS(this.serverUrl);
+  this.stompClient = Stomp.over(ws);
+  let that = this;
+  this.stompClient.connect({}, function (frame) {
+  that.stompClient.subscribe('/topic/user' + userCode, (payload) => {
+    var user = JSON.parse(payload.body);
+    console.log(user);
+    
+    //this.stompClient.subscribe('/topic/room'+user.gameCode, onRoomEntered);
+    //this.stompClient.send("/app/memory/startGame",
+    //    {},
+    //    JSON.stringify({gameCode: user.gameCode})
+    //    );
+},
+error => {
+        console.log( 'Subscribe: error: ' + error);
+      },
+      () => {
+       console.log( 'Subscribe, On complete');
+});
+that.stompClient.send("/app/memory/findRoom",{},
+JSON.stringify({userCode:userCode, username: username})
+    );
+});
+}
  
   getNumberList(): Observable<number[]> {
     console.log("Pocetak funkc", GameService.gameStarter);

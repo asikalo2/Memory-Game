@@ -4,6 +4,7 @@ import com.comtrade.edit.chat.listener.WebSocketEventListener;
 import com.comtrade.edit.chat.model.Game;
 import com.comtrade.edit.chat.model.User;
 import com.comtrade.edit.chat.model.Message;
+import com.comtrade.edit.chat.model.VisibleGameData;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +39,14 @@ public class ChatController {
 
     @MessageMapping("/createGame")
     @SendTo("/topic/newGame")
-    public Game getStartGame(@Payload Game game) {
+    public VisibleGameData getStartGame(@Payload VisibleGameData gameV) {
         
         //Generating code of game and codes of players 
+        
+        Game game = new Game();
+        game.setUsername(gameV.getUsername());
+        game.setNumberOfPlayers(gameV.getNumberOfPlayers());
+        game.setRows(gameV.getRows());
         
         Hashids hashids = new Hashids("this is my salt", 4, "abcdefghijklmnopqrstuvwxyz1234567890");
         ArrayList<User> users=new ArrayList<User>();
@@ -61,7 +67,7 @@ public class ChatController {
          numberOfCodes = numberOfCodes + game.getNumberOfPlayers();
        //for players
         game.setUsers(users);
-        
+        gameV.setUsers(users);
         
         //Generate field for game
        Vector fields=new Vector();
@@ -78,7 +84,7 @@ public class ChatController {
         //Add new game in HashMap
         Games.put(game.getGameCode(), game);
         
-        return game;
+        return gameV;
     }
     
     
