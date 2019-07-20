@@ -10,7 +10,7 @@ import { Card } from '../models/card';
 export class GamePage implements OnInit {
  rows: number;
  hidden: boolean = false;
- numberList: number[];
+ numberList: number[] = [];
  cardList: Card[] = [];
 
  private iconMap = {
@@ -24,10 +24,10 @@ export class GamePage implements OnInit {
 
   ngOnInit() {
     this.rows = this._gameService.gameStarter.rowsNumber;
-    this.getNumber();
+    this.getNumbers();
   }
 
-  flipCard(card: Card){
+  flipCard(card: Card) {
     if (!card.hidden) {
       console.log(card.hidden);
       return;
@@ -39,18 +39,22 @@ export class GamePage implements OnInit {
     // ...
   }
 
-  getNumber(){
-    // this.numberList = this._gameService.getNumberList();
-   
-    // this.numberList.forEach((num, index) => {
-    //   let card = new Card;
-    //   card.index = index;
-    //   card.number = num;
-    //   card.icon = this.iconMap["" + num];
-    //   card.hidden = true;
+  getNumbers() {
+    this._gameService.getNumberList().subscribe(num => {
+      this.numberList = num;
+      console.log(this.numberList);
+    });
 
-    //   this.cardList.push(card);
-    // });
-    // console.log(this.cardList);
+    this.numberList.forEach((num, index) => {
+      const card = new Card();
+      card.index = index;
+      card.number = num;
+      card.icon = this.iconMap['' + num];
+      card.hidden = true;
+
+      this.cardList.push(card);
+    });
+    console.log(this.cardList);
+    console.log(this.rows);
   }
 }

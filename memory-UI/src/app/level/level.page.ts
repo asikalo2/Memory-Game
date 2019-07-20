@@ -1,7 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { GameService } from "../shared/game.service";
-import { FormGroup, FormBuilder, Validators, FormControl } from "@angular/forms";
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormControl
+} from "@angular/forms";
 
 @Component({
   selector: "app-level",
@@ -25,28 +30,25 @@ export class LevelPage implements OnInit {
   }
 
   ngOnInit() {
-   
-    
+    this.gameForm.get("selectDiff").valueChanges.subscribe(selectedOption => {
+      this.rowsNumber = selectedOption;
+      console.log(this.rowsNumber);
+      
+    });
 
-    // this.gameForm.get('selectDiff').valueChanges.subscribe(selectedOption => {
-    //   this.rowsNumber = selectedOption;
-    //   console.log(this.rowsNumber);
-
-    // });
-
-    // this.gameForm.get('playersNumber').valueChanges.subscribe(selectedOption => {
-    //   this.playersNumber = selectedOption;
-    //   console.log(this.playersNumber);
-    // });
+    this.gameForm.get("selectPlayer").valueChanges.subscribe(selectedOption => {
+      this.playersNumber = selectedOption;
+      console.log(this.playersNumber);
+    });
   }
 
   onSubmit() {
-this.playersNumber = this.gameForm.get('selectPlayer').value;
-this.rowsNumber = this.gameForm.get('selectDiff').value;
+    this.rowsNumber =  this.gameForm.get("selectDiff").value;
+    this.playersNumber =  this.gameForm.get("selectPlayer").value;
 
-this._gameService.setGameProperties ( this.rowsNumber, this.playersNumber);
-this.router.navigate(['/key-list']);
+
+    this._gameService.setGameProperties(this.rowsNumber, this.playersNumber);
+    console.log(this._gameService.gameStarter);
+    this.router.navigate(["/key-list"]);
   }
-
- 
 }
