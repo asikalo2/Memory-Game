@@ -23,7 +23,7 @@ export class GamePage implements OnInit {
   constructor(public _gameService: GameService) { }
 
   ngOnInit() {
-    this.rows = this._gameService.gameStarter.rowsNumber;
+    this.rows = GameService.gameStarter.rowsNumber;
     this.getNumbers();
   }
 

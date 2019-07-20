@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { GameService } from "../shared/game.service";
+
 import {
   FormGroup,
   FormBuilder,
@@ -17,6 +18,10 @@ export class LevelPage implements OnInit {
   gameForm: FormGroup;
   rowsNumber: number;
   playersNumber: number;
+
+ 
+ 
+
 
   constructor(
     private router: Router,
@@ -45,10 +50,9 @@ export class LevelPage implements OnInit {
   onSubmit() {
     this.rowsNumber =  this.gameForm.get("selectDiff").value;
     this.playersNumber =  this.gameForm.get("selectPlayer").value;
-
-
     this._gameService.setGameProperties(this.rowsNumber, this.playersNumber);
-    console.log(this._gameService.gameStarter);
+    
     this.router.navigate(["/key-list"]);
+
   }
 }

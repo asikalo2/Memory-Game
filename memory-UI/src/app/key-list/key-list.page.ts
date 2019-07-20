@@ -9,18 +9,26 @@ import { GameService } from '../shared/game.service';
 })
 export class KeyListPage implements OnInit {
 
-  
+  myKey: string;
+  playersKeys: string[];
   constructor(
-    private router: Router,
-    public _gameService: GameService
-  ) {}
+    private router: Router
+  ) {
+    this.myKey = GameService.myKey;
+    this.playersKeys = GameService.playersKeys;
+  }
 
   ngOnInit() {
+  
+    console.log('my key: ' + GameService.myKey , 'userys keys:' + GameService.playersKeys);
+
+    console.log('this.my key: ' + this.myKey , 'userys keys:' + this.playersKeys);
+
   }
 
   nextPage() {
-    console.log(this._gameService.gameStarter);
-  if(this._gameService.gameStarter.username !== '')
+    console.log(GameService.gameStarter);
+  if(GameService.gameStarter.username !== '')
   {
     this.router.navigate(['/game']);
   }

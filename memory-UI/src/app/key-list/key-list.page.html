@@ -7,11 +7,10 @@
 <ion-content>
     <div style="margin-top:10%">
     <ion-label class="username-label" >My key:</ion-label>
-    <p style="margin-left: 5%">gm-skajdkljasdkljasd</p>
+    <p style="margin-left: 5%">{{myKey}}</p>
 
     <ion-label class="username-label" >Players key:</ion-label>
-    <p style="margin-left: 5%">Player 1 - pl-isadhajshdkjsa</p>
-    <p style="margin-left: 5%">Player 2 - pl-isadhajshdkjsa</p>
+    <p style="margin-left: 5%" *ngFor = "let k of playersKeys">{{k}}</p>
     </div>
     <div class="ion-padding">
 
