@@ -7,6 +7,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { JoinKeyPage } from './join-key.page';
+import { MaterialDesignModule } from '../shared/material-design.module';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
+    MaterialDesignModule,
     RouterModule.forChild(routes)
   ],
   declarations: [JoinKeyPage]

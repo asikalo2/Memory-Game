@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { GamePage } from './game.page';
 import { MaterialDesignModule } from '../shared/material-design.module';
+import { IonicStorageModule } from '@ionic/storage';
 
 const routes: Routes = [
   {
@@ -25,4 +26,4 @@ const routes: Routes = [
   ],
   declarations: [GamePage]
 })
-export class GamePageModule {}
+export class GamePageModule { }

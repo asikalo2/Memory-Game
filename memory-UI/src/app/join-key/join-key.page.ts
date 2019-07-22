@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GameService } from '../shared/game.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-join-key',
@@ -13,7 +14,8 @@ export class JoinKeyPage implements OnInit {
 
   constructor(
     private router: Router,
-    public _gameService: GameService
+    public _gameService: GameService,
+    private snackBar: MatSnackBar
   ) { 
     this.joinKeyForm = new FormGroup({
       code: new FormControl()
@@ -23,4 +25,25 @@ export class JoinKeyPage implements OnInit {
   ngOnInit() {
   }
 
+  joinGame(){
+    if(this.joinKeyForm.invalid)
+    {
+      return;
+    }
+    var err = this._gameService.joinPlayer(this.joinKeyForm.get("code").value,GameService.username).then(() => {
+      this.openSnackBar("Success!", "Join game!");
+      this.router.navigate(['/game']);
+
+    }).catch((err) => { console.log(err);
+      this.openSnackBar("Error!", "User code is incorrect!");
+    });
+    
+    
+  }
+  
+  openSnackBar(message: string, description: string): void {
+    this.snackBar.open(message, description, {
+      duration: 10000
+    });
+  }
 }

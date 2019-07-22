@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
     }
 
     this._gameService.setUsername(this.loginForm.get("username").value);
+  
     this.router.navigate(["/start"]);
   }
 }

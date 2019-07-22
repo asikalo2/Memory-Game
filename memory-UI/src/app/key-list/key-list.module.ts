@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { KeyListPage } from './key-list.page';
+import { MaterialDesignModule } from '../shared/material-design.module';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    MaterialDesignModule,
     RouterModule.forChild(routes)
   ],
   declarations: [KeyListPage]

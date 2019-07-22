@@ -7,7 +7,7 @@
           </ion-chip>
         </ion-toolbar>
       </ion-header>
-    <div style="margin-top:1%;">
+    <div *ngIf="show" style="margin-top:1%;" >
         <mat-grid-list cols="{{rows}}" rowHeight="1:1">
         <mat-grid-tile *ngFor="let c of cardList" (click)='flipCard(c)'><ion-icon *ngIf="!c.hidden" name={{c.icon}}></ion-icon></mat-grid-tile>
          
@@ -18,17 +18,14 @@
        
 
       </div>
-      <div style="display: inline-block; width:100%">
+      <div *ngIf="show" style="display: inline-block; width:100%">
           <div class="players">Players:
-              <div class="pl" > Player 1  </div>
-              <div class="pl"> Player 3   </div>
+              <div class="pl" *ngFor="let pl of game.users"> {{pl.username}}  | {{pl.points}} pts.  </div>
+              
              </div>  
-              <div class="players2">Points
-                 <div class="pl"> 2  </div>
-                 <div class="pl"> 5  </div>
-                </div>
+              
       </div>
-     
+   
 </ion-content>
 
 

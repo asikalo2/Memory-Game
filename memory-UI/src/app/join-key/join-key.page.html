@@ -7,7 +7,7 @@
 <ion-content>
   <div style="margin-top:10%">
   <ion-label class="username-label" >Enter the code:</ion-label>
- <form [formGroup]="joinKeyForm">
+ <form [formGroup]="joinKeyForm" (ngSubmit)="joinGame()">
   <ion-input formControlName="code" required type="text" class="labela" placeholder="Code" ></ion-input>
   <ion-button expand="block" type="submit" class="login-btn" color="primary">
     <p>Join Game</p>
