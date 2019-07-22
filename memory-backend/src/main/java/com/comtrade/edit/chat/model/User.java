@@ -12,7 +12,6 @@ package com.comtrade.edit.chat.model;
 public class User {
     private String userCode;
     private String username;
-    private String gameCode;
     private int points;
 
     public int getPoints() {
@@ -31,14 +30,6 @@ public class User {
         this.username = username;
     }
 
-    public String getGameCode() {
-        return gameCode;
-    }
-
-    public void setGameCode(String gameCode) {
-        this.gameCode = gameCode;
-    }
-    
     public String getUserCode() {
         return userCode;
     }

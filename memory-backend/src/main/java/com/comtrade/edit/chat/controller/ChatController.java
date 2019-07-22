@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 import org.hashids.Hashids;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,6 @@ public class ChatController {
           String id = hashids.encode(i);
           User user = new User();
           user.setUserCode(id);
-          user.setGameCode(gameCode);
           users.add(user);
        }
        
@@ -89,7 +89,7 @@ public class ChatController {
     
     
     @MessageMapping("/findRoom")
-    public void findRoom(@Payload User user) {
+    public void findRoom(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
        
     String gameCode = null;
     Boolean found = false;
@@ -101,16 +101,24 @@ public class ChatController {
         for (User u : allUsers) {
             if(u.getUserCode().equals(user.getUserCode())) {
                 u.setUsername(user.getUsername());
-                gameCode=u.getGameCode();
+                gameCode=code;
                 found=true;
                 break;
             }
         }
         if (found) break;
     }
-    user.setGameCode(gameCode);
     
-    simpMessagingTemplate.convertAndSend("/topic/user"+user.getUserCode(), user);
+    Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+        if (sessionAttributes != null) {
+            sessionAttributes.put("userCode", user.getUserCode()); 
+            sessionAttributes.put("gameCode", gameCode);
+        }
+        
+    
+    JSONObject documentObj = new JSONObject();
+    documentObj.put("gameCode", gameCode);
+    simpMessagingTemplate.convertAndSend("/topic/user"+user.getUserCode(), documentObj);
     }
     
     @MessageMapping("/startGame")

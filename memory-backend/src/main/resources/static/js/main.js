@@ -55,7 +55,18 @@ function onConnectedNewGame() {
 
 function onGameStarted(payload) {
   var game = JSON.parse(payload.body);
-    console.log(game);  
+  console.log(game); 
+    
+  stompClient.subscribe('/topic/user'+username, onUserJoined);
+
+  // Tell your username to the server
+  stompClient.send("/app/memory/findRoom",
+      {},
+      JSON.stringify({userCode:game.users[0].userCode, username: game.username})
+      );
+      
+      
+  logArea.classList.add('hidden');
     //PRIKAZUJU SE SVI KODOVI NA PAGE-U
 }
 
