@@ -2,7 +2,7 @@
     <ion-header translucent>
         <ion-toolbar>
           <span class="header-title">Memory Game</span> 
-           <ion-chip color="primary" outline  [routerLink]="['/key-list']">
+           <ion-chip color="primary" outline *ngIf="!hideCodesButton" [routerLink]="['/key-list']">
             <ion-label>Codes</ion-label>
           </ion-chip>
         </ion-toolbar>

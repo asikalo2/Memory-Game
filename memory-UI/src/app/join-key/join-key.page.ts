@@ -43,7 +43,7 @@ export class JoinKeyPage implements OnInit {
   
   openSnackBar(message: string, description: string): void {
     this.snackBar.open(message, description, {
-      duration: 10000
+      duration: 5000
     });
   }
 }

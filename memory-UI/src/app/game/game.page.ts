@@ -25,6 +25,7 @@ export class GamePage implements OnInit {
   }
 
   game: Game;
+  hideCodesButton: boolean = false;
   constructor(public _gameService: GameService, private router: Router, private storage: Storage) {
 
   }
@@ -45,7 +46,11 @@ export class GamePage implements OnInit {
         this.show = true;
         this.generateGrid();
       });
-    })
+      if (!GameService.isStarter) {
+        console.log(GameService.gameJoin);
+        this.hideCodesButton = true;
+      }   
+     });
     console.log('game page', this.game);
   }
   flipCard(card: Card) {
@@ -61,6 +66,7 @@ export class GamePage implements OnInit {
   }
 
   generateGrid() {
+    
     this.router.navigate(["/game"]);
     let num = this.game.rows * this.game.rows;
     for (let i = 0; i < num; i++) {

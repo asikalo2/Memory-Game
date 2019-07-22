@@ -15,6 +15,7 @@ import { Storage } from '@ionic/storage';
 export class GameService {
   public static username: string;
   public static gameStarter: GameStart = new GameStart();
+  public static isStarter: boolean  = false;
   public static gameJoin: GameJoin = new GameJoin();
   public static game: Game = new Game();
 
@@ -37,6 +38,7 @@ export class GameService {
     GameService.gameStarter.username = GameService.username;
     GameService.gameStarter.rowsNumber = rowsNumber;
     GameService.gameStarter.playerNumber = playerNumber;
+    GameService.isStarter = true;
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
     let that = this;
