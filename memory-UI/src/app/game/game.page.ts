@@ -26,7 +26,10 @@ export class GamePage implements OnInit {
 
   game: Game;
   hideCodesButton: boolean = false;
-  constructor(public _gameService: GameService, private router: Router, private storage: Storage) {
+  constructor(public _gameService: GameService, 
+    private router: Router,
+     private storage: Storage
+     ) {
 
   }
 

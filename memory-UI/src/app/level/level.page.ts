@@ -50,9 +50,20 @@ export class LevelPage implements OnInit {
   onSubmit() {
     this.rowsNumber =  this.gameForm.get("selectDiff").value;
     this.playersNumber =  this.gameForm.get("selectPlayer").value;
-    this._gameService.setGameProperties(this.rowsNumber, this.playersNumber);
-    
-    this.router.navigate(["/key-list"]);
+
+    // first version
+    // this._gameService.setGameProperties(this.rowsNumber, this.playersNumber);
+    // this.router.navigate(["/key-list"]);
+
+    //new version
+    var gm =  this._gameService.setGameProperties(this.rowsNumber, this.playersNumber).then(() => {
+      console.log('uspjeeeh');
+      this.router.navigate(['/key-list']);
+
+    }).catch((err) => {
+       console.log(err);
+     // this.openSnackBar("Error!", "User code is incorrect!");
+    });
 
   }
 }
