@@ -55,6 +55,7 @@ function onConnectedNewGame() {
 
 function onGameStarted(payload) {
   var game = JSON.parse(payload.body);
+  
   console.log(game); 
     
   stompClient.subscribe('/topic/user'+username, onUserJoined);
@@ -120,6 +121,7 @@ function onUserJoined(payload) {
 
 function onRoomEntered(payload) {
   var game = JSON.parse(payload.body);
+  
     console.log(game);
 
     //PRIKAZUJU SE SVI KODOVI NA PAGE-U

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 import org.hashids.Hashids;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,6 +126,7 @@ public class ChatController {
     public void startGame(@Payload Game game) {
        
     String gameCode = game.getGameCode();
+    
     Boolean found = false;
     //Find game status for room with code gameCode
     for(Map.Entry<String, Game> entry : Games.entrySet()) {
@@ -137,7 +139,19 @@ public class ChatController {
         
         if (found) break;
     }
+
     
-    simpMessagingTemplate.convertAndSend("/topic/room"+gameCode, game);
+    JSONArray array = new JSONArray();
+    for(User user: game.getUsers()){
+         JSONObject o=new JSONObject();
+         o.put("username",user.getUsername());
+         o.put("points",user.getPoints());
+         array.add(o);
+    }
+    JSONObject obj=new JSONObject();
+    obj.put("rows",game.getRows());
+    obj.put("users",array);
+    
+    simpMessagingTemplate.convertAndSend("/topic/room"+gameCode, obj);
     }
 }
