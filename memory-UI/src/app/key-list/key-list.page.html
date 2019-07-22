@@ -1,21 +1,28 @@
 <ion-header translucent>
-    <ion-toolbar>
-      <ion-title class="header-title">Memory Game</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-<ion-content>
-    <div style="margin-top:10%">
-    <ion-label class="username-label" >My key:</ion-label>
-    <p style="margin-left: 5%">{{myKey}}</p>
-
-    <ion-label class="username-label" >Players key:</ion-label>
-    <p style="margin-left: 5%" *ngFor = "let k of playersKeys">{{k}}</p>
-    </div>
-    <div class="ion-padding">
-
-        <ion-button expand="block" (click)="nextPage()" class="login-btn" color="primary">
-          <p>NEXT</p>
-        </ion-button>
-      </div>
+  <ion-toolbar>
+    <ion-title class="header-title">Memory Game</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [style.display]="show1?'block':'none'" padding>
+  <ion-grid style="height: 100%">
+      <ion-row justify-content-center align-items-center style="height: 100%; flex-direction: column">
+          <ion-spinner name="circles"></ion-spinner>
+          Generating codes...
+        </ion-row>
+      </ion-grid>
+</ion-content>
+<ion-content id="second" [style.display]="show2?'block':'none'">
+<div style="margin-top:10%">
+<ion-label class="username-label" >My key:</ion-label>
+<div class="first">
+</div>
+<ion-label class="username-label">Players key:</ion-label>
+<div class="second">
+</div>
+</div>
+<div class="ion-padding">
+    <ion-button expand="block" (click)="nextPage()" class="login-btn" color="primary">
+      <p>NEXT</p>
+    </ion-button>
+  </div>
 </ion-content>

@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'key-list', loadChildren: './key-list/key-list.module#KeyListPageModule' },
   { path: 'enter-code', loadChildren: './enter-code/enter-code.module#EnterCodePageModule' },
   { path: 'game', loadChildren: './game/game.module#GamePageModule' },
+  { path: 'join-key', loadChildren: './join-key/join-key.module#JoinKeyPageModule' },
 
 ];
 

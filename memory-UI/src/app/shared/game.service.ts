@@ -5,43 +5,49 @@ import { Observable, of } from "rxjs";
 
 import * as Stomp from "stompjs";
 import * as SockJS from "sockjs-client";
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: "root"
 })
 export class GameService {
+  public static username: string;
   public static gameStarter: GameStart = new GameStart();
   public static gameJoin: GameJoin = new GameJoin();
-  public static myKey: string;
-  public static playersKeys: string[] = [];
+ 
+
   public numberList: number[];
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
   private stompClient;
   private connected: boolean = false;
-  constructor() {}
-
+  constructor() {
+  //this.initializeWebSocket();
+  }
+initializeWebSocket(){
+   let ws = new SockJS(this.serverUrl);
+   this.stompClient = Stomp.over(ws);
+ }
   setUsername(username: string) {
-    GameService.gameStarter.username = username;
+   GameService.username = username;
   }
   setGameProperties(rowsNumber: number, playerNumber: number) {
+    GameService.gameStarter.username = GameService.username;
     GameService.gameStarter.rowsNumber = rowsNumber;
     GameService.gameStarter.playerNumber = playerNumber;
-
-
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
     let that = this;
     this.stompClient.connect({}, function (frame) {
     that.stompClient.subscribe('/topic/newGame', (payload) => {
     var game = JSON.parse(payload.body);
-    GameService.myKey = game.users[0].userCode;
-    for (let i = 1; i < game.users.length; i++){
-        GameService.playersKeys.push(game.users[i].userCode);
+  
+    for (let i = 0; i < game.users.length; i++){
+      let usr = new User(game.users[i].username, game.users[i].userCode, game.users[i].points);
+      GameService.gameStarter.users.push(usr);
     }
-    console.log('iz servisa: ' + GameService.myKey,  GameService.playersKeys);
-    console.log(game.users);
    
+   console.log('game starter u game servis:' , GameService.gameStarter);
   },
   error => {
           console.log( 'Subscribe: error: ' + error);

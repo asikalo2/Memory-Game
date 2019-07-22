@@ -17,6 +17,6 @@ export class StartPage implements OnInit {
   }
 
   joinGame() {
-    console.log("join game");
+    this.router.navigate(["/join-key"]);
   }
 }
