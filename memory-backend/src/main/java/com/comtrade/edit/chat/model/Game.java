@@ -18,7 +18,15 @@ public class Game {
     private String username;
     private int numberOfPlayers;
     private int rows;
-    private Vector gameField = new Vector();
+    private Vector <Card> gameField = new Vector<Card>();
+
+    public Vector<Card> getGameField() {
+        return gameField;
+    }
+
+    public void setGameField(Vector<Card> gameField) {
+        this.gameField = gameField;
+    }
     private ArrayList<User> users = new ArrayList<User>();
     private String gameCode;
 
@@ -55,14 +63,6 @@ public class Game {
 
     public void setRows(int rows) {
         this.rows = rows;
-    }
-
-    public void setGameField(Vector gameField) {
-        this.gameField = gameField;
-    }
-
-    public Vector getGameField() {
-        return gameField;
     }
 
     public String getUsername() {
