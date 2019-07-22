@@ -1,8 +1,9 @@
 mat-grid-tile {
-    background: lightblue;
-   
-  }
-  .header-title {
+  background: lightblue;
+  font-size: 3rem;
+}
+
+.header-title {
     color: #3498db;
     font-weight: bolder;
     margin-left: 30%;
@@ -22,13 +23,10 @@ mat-grid-tile {
   margin-top: 12%;
   margin-left: 9%;
   float: left;
-
-
 }
+
 .pl{
- 
   color: black; 
   font-weight: initial; 
   margin-top: 10%;
-
 }
