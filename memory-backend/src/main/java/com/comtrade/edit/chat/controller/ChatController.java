@@ -101,10 +101,12 @@ public class ChatController {
         ArrayList<User> allUsers = game.getUsers();
         for (User u : allUsers) {
             if(u.getUserCode().equals(user.getUserCode())) {
-                u.setUsername(user.getUsername());
-                gameCode=code;
-                found=true;
-                break;
+                if(u.getUsername() == null){
+                    u.setUsername(user.getUsername());
+                    gameCode=code;
+                    found=true;
+                    break;
+                }
             }
         }
         if (found) break;

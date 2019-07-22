@@ -58,7 +58,7 @@ function onGameStarted(payload) {
   
   console.log(game); 
     
-  stompClient.subscribe('/topic/user'+username, onUserJoined);
+  stompClient.subscribe('/topic/user'+game.users[0].userCode, onUserJoined);
 
   // Tell your username to the server
   stompClient.send("/app/memory/findRoom",
