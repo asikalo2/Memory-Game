@@ -193,9 +193,41 @@ public class ChatController {
         }
         JSONObject obj=new JSONObject();
         obj.put("cardValue",cardValue);
+        obj.put("cardIndex", move.getPosition());
         
      
         simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
     }
-   
+    @MessageMapping("/getCardsStatus")
+    public void getCardsStatus(@Payload Move move) {
+
+        //find gamecode
+        String gameCode = null;
+        Boolean found = false;
+        int cardValue=0;
+        //Find room for player with code user.getKey()
+        
+        for (Map.Entry<String, Game> entry : Games.entrySet()) {
+            String code = entry.getKey();
+            Game game = entry.getValue();
+            ArrayList<User> allUsers = game.getUsers();
+            for (User u : allUsers) {
+                if (u.getUserCode().equals(move.getUserCode())) {
+                    gameCode = code;
+                    found = true;
+                    cardValue=game.getGameField().get(move.getPosition()).getFieldValue();
+                    game.getGameField().get(move.getPosition()).setStatus(true);
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+        JSONObject obj=new JSONObject();
+        obj.put("cardValue",cardValue);
+        
+     
+        simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
+    }
 }
