@@ -83,7 +83,7 @@ public class ChatController {
         Vector<Card> cards = new Vector<Card>();
         for (int i=0;i<fields.size();i++) {
             
-            Card card=new Card(i,false);
+            Card card=new Card((int) fields.get(i),false);
             cards.add(card);
         }
 
