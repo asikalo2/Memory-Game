@@ -34,10 +34,7 @@ export class GamePage implements OnInit {
   }
 
   ngOnInit() {
-    // this.rows = GameService.gameStarter.rowsNumber;
-
-
-    //this.getNumbers();
+   
   }
   ngAfterViewInit() {
     this.storage.ready().then(() => {
@@ -83,22 +80,5 @@ export class GamePage implements OnInit {
     }
   }
 
-  getNumbers() {
-    this._gameService.getNumberList().subscribe(num => {
-      this.numberList = num;
-      console.log(this.numberList);
-    });
-
-    this.numberList.forEach((num, index) => {
-      const card = new Card();
-      card.index = index;
-      card.number = num;
-      card.icon = this.iconMap['' + num];
-      card.hidden = true;
-
-      this.cardList.push(card);
-    });
-    console.log(this.cardList);
-    console.log(this.rows);
-  }
+ 
 }
