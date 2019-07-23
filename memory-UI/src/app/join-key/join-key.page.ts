@@ -30,7 +30,9 @@ export class JoinKeyPage implements OnInit {
     {
       return;
     }
-    var err = this._gameService.joinPlayer(this.joinKeyForm.get("code").value,GameService.username).then(() => {
+    var e = false;
+    var err = this._gameService.joinPlayer(this.joinKeyForm.get("code").value,GameService.username).then((val) => {
+      e = val;
       this.openSnackBar("Success!", "Join game!");
       this.router.navigate(['/game']);
 
@@ -38,6 +40,9 @@ export class JoinKeyPage implements OnInit {
       this.openSnackBar("Error!", "User code is incorrect!");
     });
     
+    if(e === false){
+      this.openSnackBar("Error!", "User code is incorrect!");
+    }
     
   }
   

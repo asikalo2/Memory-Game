@@ -61,10 +61,8 @@ export class GamePage implements OnInit {
       console.log(card.hidden);
       return;
     } 
-    else if (this.open1 && this.open2){
+    else if (!GameService.isCurrentPlayer){
       {
-        this.open1 = false;
-        this.open2 = false;
         return;
       }
     }

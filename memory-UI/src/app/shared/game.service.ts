@@ -21,6 +21,7 @@ export class GameService {
   public static game: Game = new Game();
   public static currentCode: string;
   public static gameCode: string;
+  public static isCurrentPlayer: boolean = false;
 
   public static currentCardValue: number;
   public static cardList: Card[] = [];
@@ -113,6 +114,10 @@ export class GameService {
 
   getGameCode(userCode: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
+
+      //starter start game
+      GameService.isCurrentPlayer=true;
+
       GameService.currentCode = userCode;
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
@@ -244,7 +249,7 @@ export class GameService {
   }
 
   generateGrid() {
-    let num = GameService.game.rows*GameService.game.rows;
+    let num = GameService.game.rows * GameService.game.rows;
     for (let i = 0; i < num; i++) {
       const card = new Card();
       card.index = i;
@@ -276,11 +281,24 @@ export class GameService {
           console.log('card u subscibe', game);
           GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
           GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
-          for(let i = 0 ; i < game.cards.length; i++){
-               GameService.cardList[i].hidden=!game.cards[i].status;
-          }
-          GameService.currentCardValue = JSON.parse(game.cardValue);    
+          for (let i = 0; i < game.cards.length; i++) {
+            if (game.cards[i].value != null) {
+              GameService.cardList[i].hidden = false
+              GameService.cardList[i].icon = this.iconMap['' + game.cards[i].value]
+            }
+            else {
+              GameService.cardList[i].hidden = false
+            }
 
+          //  GameService.cardList[i].hidden = !game.cards[i].status;
+          }
+          GameService.currentCardValue = JSON.parse(game.cardValue);
+          if( GameService.currentCode === game.nextPlayer.userCode) {
+            GameService.isCurrentPlayer=true;
+          }
+          else {
+            GameService.isCurrentPlayer=false;
+          }
         }
 
       });
