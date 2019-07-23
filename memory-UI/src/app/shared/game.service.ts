@@ -8,6 +8,9 @@ import * as SockJS from "sockjs-client";
 import { User } from "../models/user";
 import { Game } from "../models/game";
 import { Storage } from "@ionic/storage";
+import { reject } from 'q';
+import { resolve } from 'dns';
+import { Card } from '../models/card';
 
 @Injectable({
   providedIn: "root"
@@ -18,12 +21,25 @@ export class GameService {
   public static isStarter: boolean = false;
   public static gameJoin: GameJoin = new GameJoin();
   public static game: Game = new Game();
+  public static currentCode: string;
+  public static gameCode: string;
+
+  public static currentCardValue: number;
+  public static cardList: Card[] = [];
 
   public numberList: number[];
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
   private stompClient;
   private connected: boolean = false;
+
+  private iconMap = {
+    "1": "basket", "2": "contract", "3": "expand", "4": "flashlight", "5": "happy", "6": "jet", "7": "planet", "8": "rose",
+    "9": "pulse", "10": "rocket", "11": "heart", "12": "flash", "13": "add-circle", "14": "add-circle-outline", "15": "cafe", "16": "basketball",
+    "17": "car", "18": "bus", "19": "hand", "20": "clock", "21": "heart-half", "22": "moon", "23": "paw", "24": "sad",
+    "25": "school", "26": "star", "27": "logo-instagram", "28": "logo-youtube", "29": "logo-android", "30": "logo-apple", "31": "logo-facebook", "32": "logo-freebsd-devil",
+  }
+
   constructor(public storage: Storage) {
     this.initializeWebSocket();
   }
@@ -64,7 +80,7 @@ export class GameService {
               console.log("startUser postavljeno", value);
               resolve(true);
             });
-            
+
           },
           error => {
             console.log("Subscribe: error: " + error);
@@ -88,10 +104,14 @@ export class GameService {
     });
   }
 
-  
+
+  getCards(): Card[] {
+    return GameService.cardList;
+  }
 
   getGameCode(userCode: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      GameService.currentCode = userCode;
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
@@ -99,6 +119,7 @@ export class GameService {
           "/topic/user" + userCode,
           payload => {
             var data = JSON.parse(payload.body);
+            GameService.gameCode = data.gameCode;
             console.log(data);
             if (!data || data.gameCode === null) {
               reject();
@@ -106,18 +127,8 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
-                  var game = JSON.parse(payload.body);
-
-                  GameService.game.rows = game.rows;
-                  GameService.game.users = game.users;
-                  this.storage.ready().then(() => {
-                    this.storage
-                      .set("game", JSON.stringify(GameService.game))
-                      .then(value => {
-                        console.log("game postavljeno", value);
-                        resolve(true);
-                      });
-                  });
+                  this.subscribeToGameRoom(payload);
+                  resolve(true);
                 },
                 error => {
                   console.log("Subscribe: error: " + error);
@@ -159,6 +170,7 @@ export class GameService {
     return new Promise((resolve, reject) => {
       GameService.gameJoin.username = username;
       GameService.gameJoin.key = userCode;
+      GameService.currentCode = userCode;
       this.storage.set("joinUser", JSON.stringify(GameService.gameJoin));
 
       console.log("Join player:", GameService.gameJoin);
@@ -169,6 +181,7 @@ export class GameService {
           "/topic/user" + userCode,
           payload => {
             var data = JSON.parse(payload.body);
+            GameService.gameCode = data.gameCode;
             console.log(data);
             if (!data || data.gameCode === null) {
               reject();
@@ -176,13 +189,7 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
-                  var game = JSON.parse(payload.body);
-
-                  GameService.game.rows = game.rows;
-                  GameService.game.users = game.users;
-                  this.storage.set("game", JSON.stringify(GameService.game));
-
-                  console.log("join game postavljeno", GameService.game);
+                  this.subscribeToGameRoom(payload);
                   resolve(true);
                 },
                 error => {
@@ -216,35 +223,72 @@ export class GameService {
     });
   }
 
-  subscribeToGameStarter(gameCode) {
-    let that = this;
-    this.stompClient.connect({}, function(frame) {
-      that.stompClient.subscribe(
-        "/topic/room" + gameCode,
-        payload => {
-          //konekcija na igru
-        },
-        error => {
-          console.log("Subscribe: error: " + error);
-        },
-        () => {
-          console.log("Subscribe, On complete");
-        }
-      );
-      that.stompClient.send(
-        "/app/memory/startGame",
-        {},
-        JSON.stringify({
-          userCode: GameService.gameStarter.users[0].code,
-          username: GameService.gameStarter.users[0].username
-        })
-      );
+
+
+  //userCode, position
+  getValueOfCard(index: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let ws = new SockJS(this.serverUrl);
+      this.stompClient = Stomp.over(ws);
+      this.stompClient.connect({}, () => {
+        this.stompClient.subscribe('topic/room' + GameService.gameCode, payload => {
+          this.subscribeToGameRoom(payload);
+        });
+
+        this.stompClient.send("/app/memory/sendMove",
+          {},
+          JSON.stringify({ userCode: GameService.currentCode, position: index })
+        );
+      });
     });
   }
 
-  //userCode, position
-  getValueOfCards() {
 
+  subscribeToGameRoom(payload) {
+    this.storage.ready().then(() => {
+      this.storage.set('joinUser', JSON.stringify(GameService.gameJoin)).then((value) => {
+        console.log('game postavljeno', value);
+
+        var game = JSON.parse(payload.body);
+        if (game.rows) {
+          var game = JSON.parse(payload.body);
+          GameService.game.rows = game.rows;
+          GameService.game.users = game.users;
+          this.storage.ready().then(() => {
+            this.storage
+              .set("game", JSON.stringify(GameService.game))
+              .then(value => {
+                console.log("game postavljeno", value);
+
+              });
+          });
+        } else if (game.cardValue) {
+          console.log('card u subscibe', game.cardValue);
+          GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
+          GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
+          GameService.currentCardValue = JSON.parse(game.cardValue);
+          console.log('postavljanje card', GameService.currentCardValue);
+
+        }
+
+      });
+    });
   }
- 
+
+  getCurrentValue(index: number): Promise<number> {
+    return new Promise((resolve, reject) => {
+
+      var f = this.getValueOfCard(index).then(() => {
+        console.log('card na kraju funkc', GameService.currentCardValue)
+        resolve(GameService.currentCardValue);
+      }).catch((err) => {
+        console.log(err);
+        reject();
+      });
+
+
+
+
+    });
+  }
 }

@@ -15,7 +15,9 @@ export class GamePage implements OnInit {
   rows: number;
   hidden: boolean = false;
   numberList: number[] = [];
-  cardList: Card[] = [];
+  open1: boolean = false;
+  open2: boolean = false;
+ 
 
   private iconMap = {
     "1": "basket", "2": "contract", "3": "expand", "4": "flashlight", "5": "happy", "6": "jet", "7": "planet", "8": "rose",
@@ -57,9 +59,22 @@ export class GamePage implements OnInit {
     if (!card.hidden) {
       console.log(card.hidden);
       return;
+    } else if (this.open1 && this.open2){
+      {
+        return;
+      }
     }
-    console.log(card.hidden);
-
+    let val = this._gameService.getCurrentValue(card.index).then((num) => {
+      console.log("uslaa", num);
+      card.icon = this.iconMap['' + num];
+      
+    }).catch((err) => { 
+      console.log(err);
+     
+    });;
+    
+    
+    
     card.hidden = false;
 
     // ...
@@ -73,10 +88,10 @@ export class GamePage implements OnInit {
       const card = new Card();
       card.index = i;
       card.number = 1;
-      card.icon = this.iconMap['' + 1];
+      card.icon = 'hourglass';
       card.hidden = true;
 
-      this.cardList.push(card);
+      GameService.cardList.push(card);
     }
   }
 
