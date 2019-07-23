@@ -1,14 +1,40 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
-  <div class="ion-padding">
-    The world is your oyster.
-    <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs/">docs</a> will be your guide.</p>
+ <div class="title">
+  <h1>Memory</h1>
+  <h1> Game</h1>
+ </div>
+   
+<div class="login">
+  <form [formGroup]="loginForm"  (ngSubmit)="toStartPage()">
+      <ion-label class="username-label">Username</ion-label>
+      <ion-item  class="username-input"> 
+        
+        <ion-input formControlName="username" placeholder="Enter the username" required type="text" color="white" ></ion-input>
+  
+      </ion-item>
+      
+      <ion-item *ngIf="!loginForm.controls.username.valid  && (loginForm.controls.username.dirty || submitAttempt)">
+          <p>Please enter a valid username.</p>
+      </ion-item>
+      <ion-item *ngIf="f.username.errors?.required && (loginForm.controls.username.dirty || submitAttempt)">
+          <p>Username is required!</p>
+      </ion-item>
+  
+    <div class="ion-padding">
+     
+      <ion-button expand="block" type=submit class="login-btn" color="light"><p>Login</p></ion-button>
+   
+    </div>
+   
+    
+    
+  </form>
+     
   </div>
+     
+   
+   
+  
 </ion-content>
+

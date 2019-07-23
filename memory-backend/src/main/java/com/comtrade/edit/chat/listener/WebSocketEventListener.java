@@ -1,5 +1,6 @@
 package com.comtrade.edit.chat.listener;
 
+import com.comtrade.edit.chat.model.Game;
 import com.comtrade.edit.chat.model.Message;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -30,15 +31,16 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 
-        String username = (String) (sessionAttributes != null ? sessionAttributes.get("username") : null);
-        if (username != null) {
-            logger.info("User disconnected: " + username);
+        String userCode = (String) (sessionAttributes != null ? sessionAttributes.get("userCode") : null);
+        String gameCode = (String) (sessionAttributes != null ? sessionAttributes.get("gameCode") : null);
+        
+        if (userCode != null) {
+            logger.info("User disconnected: " + userCode + gameCode);
+            
+           Game game = new Game();
+           game.setUsername("User disconnected: " + userCode);
 
-            Message message = new Message();
-            message.setType(Message.MessageType.LEAVE);
-            message.setSender(username);
-
-            simpMessagingTemplate.convertAndSend("/topic/public", message);
+           simpMessagingTemplate.convertAndSend("/topic/room"+gameCode, game);
         }
     }
 }

@@ -17,7 +17,9 @@ var colors = [
   '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-function connect(event) {
+
+//OVO CE SE POZVATI KAD SE KLIKNE NA NEW GAME
+function newGame(event) {
   if (event) {
     event.preventDefault();
   }
@@ -30,26 +32,101 @@ function connect(event) {
     var socket = new SockJS('/ws');
     stompClient = window.Stomp.over(socket);
     stompClient.debug = null;
-    stompClient.connect({}, onConnected, onError);
+    stompClient.connect({}, onConnectedNewGame, onError);
+    
   }
 }
 
-
-function onConnected() {
+//Ovo se poziva na click new game
+function onConnectedNewGame() {
   connected = true;
 
   // Subscribe to the Public Topic
-  stompClient.subscribe('/topic/public', onMessageReceived);
+  stompClient.subscribe('/topic/newGame', onGameStarted);
 
   // Tell your username to the server
-  stompClient.send("/app/chat/addUser",
+  stompClient.send("/app/memory/createGame",
       {},
-      JSON.stringify({sender: username, type: 'JOIN'})
+      JSON.stringify({username: username, numberOfPlayers: 2, rows: 4})
       );
 
   logArea.classList.add('hidden');
 }
 
+function onGameStarted(payload) {
+  var game = JSON.parse(payload.body);
+  
+  console.log(game); 
+    
+  stompClient.subscribe('/topic/user'+game.users[0].userCode, onUserJoined);
+
+  // Tell your username to the server
+  stompClient.send("/app/memory/findRoom",
+      {},
+      JSON.stringify({userCode:game.users[0].userCode, username: game.username})
+      );
+      
+      
+  logArea.classList.add('hidden');
+    //PRIKAZUJU SE SVI KODOVI NA PAGE-U
+}
+
+
+
+//OVO CE SE POZVATI KAD SE UNESE KOD I KLIKNE NA JOIN GAME
+function joinGame(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  username = document.querySelector('#name').value.trim();
+  if (username) {
+    usernamePage.classList.add('hidden');
+    chatPage.classList.remove('hidden');
+
+    var socket = new SockJS('/ws');
+    stompClient = window.Stomp.over(socket);
+    stompClient.debug = null;
+    stompClient.connect({}, onConnectedJoinGame, onError);
+  }
+}
+
+//Ovo se poziva na click new game
+function onConnectedJoinGame() {
+  connected = true;
+  var user="ja";
+  //Subscribe to the Public Topic
+  //Ovdje stavimo key koji player ukuca da saznamo kojoj igri pripada
+  stompClient.subscribe('/topic/user'+username, onUserJoined);
+
+  // Tell your username to the server
+  stompClient.send("/app/memory/findRoom",
+      {},
+      JSON.stringify({userCode:username, username: user})
+      );
+  logArea.classList.add('hidden');
+}
+
+function onUserJoined(payload) {
+  var user = JSON.parse(payload.body);
+  console.log(user);
+  
+  stompClient.subscribe('/topic/room'+user.gameCode, onRoomEntered);
+  stompClient.send("/app/memory/startGame",
+      {},
+      JSON.stringify({gameCode: user.gameCode})
+      );
+      
+  logArea.classList.add('hidden');
+}
+
+function onRoomEntered(payload) {
+  var game = JSON.parse(payload.body);
+  
+    console.log(game);
+
+    //PRIKAZUJU SE SVI KODOVI NA PAGE-U
+    //ISPOD SE NALAZI BUTTON JOIN GAME KOJI OMOGUCAVA KREATORU DA SE PRIDRUZI AKO HOCE (UZIMA KOD KOJI ZELI)
+}
 
 function onError(error) {
   console.log(error);
@@ -79,6 +156,20 @@ function sendMessage(event) {
     messageInput.value = '';
   }
 }
+
+function onKeyReceived(payload) {
+  var key = JSON.parse(payload.body);
+  console.log(key.key);
+  
+  //Ovdje stavimo key koji mu server vrati
+  stompClient.subscribe('/topic/group-id'+key.key, onGameStarted);
+  
+    stompClient.send("/app/memory/loadGame",
+      {},
+      JSON.stringify({key: key.key, username: "prvi", status:1, level:1})
+      );
+}
+
 
 
 function onMessageReceived(payload) {
@@ -129,5 +220,10 @@ function getAvatarColor(messageSender) {
   return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true);
+document.getElementById('submit1').addEventListener('click', newGame, true);
+
+document.getElementById('submit2').addEventListener('click', joinGame, true);
+
+//usernameForm.addEventListener('submit', connect, true);
+
 messageForm.addEventListener('submit', sendMessage, true);
