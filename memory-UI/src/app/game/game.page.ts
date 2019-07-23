@@ -46,7 +46,7 @@ export class GamePage implements OnInit {
         this.game = valJson;
         this.rows = valJson.rows;
         this.show = true;
-        this.generateGrid();
+        this._gameService.generateGrid();
       });
       if (!GameService.isStarter) {
         console.log(GameService.gameJoin);
@@ -55,15 +55,37 @@ export class GamePage implements OnInit {
      });
     console.log('game page', this.game);
   }
+
   flipCard(card: Card) {
     if (!card.hidden) {
       console.log(card.hidden);
       return;
-    } else if (this.open1 && this.open2){
+    } 
+    else if (this.open1 && this.open2){
       {
+        this.open1 = false;
+        this.open2 = false;
         return;
       }
     }
+    this.storage.ready().then(() => {
+      this.storage.get('joinUser').then((valString) => {
+        let key = GameService.currentCode;
+        let username = GameService.username;
+        console.log(key + username);
+
+        console.log("Poziv onClick");
+
+    this._gameService.getValueOfCard(card.index);
+   if(!this.open1){
+    this.open1 = true;
+   } else if (!this.open2 ){
+      this.open2 = true;
+   }
+   
+      });
+    });
+
     let val = this._gameService.getCurrentValue(card.index).then((num) => {
       console.log("uslaa", num);
       card.icon = this.iconMap['' + num];
@@ -75,25 +97,12 @@ export class GamePage implements OnInit {
     
     
     
-    card.hidden = false;
+    //card.hidden = false;
 
     // ...
   }
 
-  generateGrid() {
-    
-    this.router.navigate(["/game"]);
-    let num = this.game.rows * this.game.rows;
-    for (let i = 0; i < num; i++) {
-      const card = new Card();
-      card.index = i;
-      card.number = 1;
-      card.icon = 'hourglass';
-      card.hidden = true;
 
-      GameService.cardList.push(card);
-    }
-  }
 
  
 }

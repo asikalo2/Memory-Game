@@ -8,8 +8,6 @@ import * as SockJS from "sockjs-client";
 import { User } from "../models/user";
 import { Game } from "../models/game";
 import { Storage } from "@ionic/storage";
-import { reject } from 'q';
-import { resolve } from 'dns';
 import { Card } from '../models/card';
 
 @Injectable({
@@ -51,7 +49,7 @@ export class GameService {
     GameService.username = username;
   }
 
-  setGameProperties(
+  createGame(
     rowsNumber: number,
     playerNumber: number
   ): Promise<boolean> {
@@ -63,6 +61,8 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
+
+        // listen to new game
         this.stompClient.subscribe(
           "/topic/newGame",
           payload => {
@@ -91,6 +91,8 @@ export class GameService {
             resolve(true);
           }
         );
+
+        // create new game
         this.stompClient.send(
           "/app/memory/createGame",
           {},
@@ -127,7 +129,7 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
-                  this.subscribeToGameRoom(payload);
+                  this.handleGame(payload);
                   resolve(true);
                 },
                 error => {
@@ -189,7 +191,7 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
-                  this.subscribeToGameRoom(payload);
+                  this.handleGame(payload);
                   resolve(true);
                 },
                 error => {
@@ -231,24 +233,32 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
-        this.stompClient.subscribe('topic/room' + GameService.gameCode, payload => {
-          this.subscribeToGameRoom(payload);
-        });
-
         this.stompClient.send("/app/memory/sendMove",
           {},
           JSON.stringify({ userCode: GameService.currentCode, position: index })
         );
+
+
       });
     });
   }
 
+  generateGrid() {
+    let num = GameService.game.rows*GameService.game.rows;
+    for (let i = 0; i < num; i++) {
+      const card = new Card();
+      card.index = i;
+      card.number = 1;
+      card.icon = 'hourglass';
+      card.hidden = true;
 
-  subscribeToGameRoom(payload) {
+      GameService.cardList.push(card);
+    }
+  }
+  handleGame(payload) {
     this.storage.ready().then(() => {
       this.storage.set('joinUser', JSON.stringify(GameService.gameJoin)).then((value) => {
         console.log('game postavljeno', value);
-
         var game = JSON.parse(payload.body);
         if (game.rows) {
           var game = JSON.parse(payload.body);
@@ -263,11 +273,13 @@ export class GameService {
               });
           });
         } else if (game.cardValue) {
-          console.log('card u subscibe', game.cardValue);
+          console.log('card u subscibe', game);
           GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
           GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
-          GameService.currentCardValue = JSON.parse(game.cardValue);
-          console.log('postavljanje card', GameService.currentCardValue);
+          for(let i = 0 ; i < game.cards.length; i++){
+               GameService.cardList[i].hidden=!game.cards[i].status;
+          }
+          GameService.currentCardValue = JSON.parse(game.cardValue);    
 
         }
 

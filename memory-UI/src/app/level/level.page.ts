@@ -56,7 +56,7 @@ export class LevelPage implements OnInit {
     // this.router.navigate(["/key-list"]);
 
     //new version
-    var gm =  this._gameService.setGameProperties(this.rowsNumber, this.playersNumber).then(() => {
+    var gm =  this._gameService.createGame(this.rowsNumber, this.playersNumber).then(() => {
       console.log('uspjeeeh');
       this.router.navigate(['/key-list']);
 
