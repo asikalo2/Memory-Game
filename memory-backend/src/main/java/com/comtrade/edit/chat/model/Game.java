@@ -18,18 +18,31 @@ public class Game {
     private String username;
     private int numberOfPlayers;
     private int rows;
-    private Vector <Card> gameField = new Vector<Card>();
+    private Vector <Integer> gameField = new Vector<Integer>();
+    private ArrayList<User> users = new ArrayList<User>();
+    private String gameCode;
+    private Vector <Integer> cards = new Vector<Integer>();
 
-    public Vector<Card> getGameField() {
+    public Vector<Integer> getGameField() {
         return gameField;
     }
 
-    public void setGameField(Vector<Card> gameField) {
+    public void setGameField(Vector<Integer> gameField) {
         this.gameField = gameField;
     }
-    private ArrayList<User> users = new ArrayList<User>();
-    private String gameCode;
+    
 
+  
+
+    public Vector<Integer> getCards() {
+        return cards;
+    }
+
+    public void setCards(Vector<Integer> cards) {
+        this.cards = cards;
+    }
+
+   
     
     
     public ArrayList<User> getUsers() {

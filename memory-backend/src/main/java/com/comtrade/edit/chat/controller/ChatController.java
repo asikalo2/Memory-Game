@@ -1,7 +1,6 @@
 package com.comtrade.edit.chat.controller;
 
 import com.comtrade.edit.chat.listener.WebSocketEventListener;
-import com.comtrade.edit.chat.model.Card;
 import com.comtrade.edit.chat.model.Game;
 import com.comtrade.edit.chat.model.User;
 import com.comtrade.edit.chat.model.Message;
@@ -34,8 +33,11 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     public static HashMap<String, Game> Games = new HashMap<String, Game>();
+    public static ArrayList<Integer> guess = new ArrayList<Integer>(Arrays.asList(null,null));
     public static Integer numberOfCodes = 1;
+    public static User nextPlayer;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+    
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -64,6 +66,7 @@ public class ChatController {
             user.setUserCode(id);
             users.add(user);
         }
+        nextPlayer=game.getUsers().get(0);
 
         numberOfCodes = numberOfCodes + game.getNumberOfPlayers();
         //for players
@@ -80,11 +83,11 @@ public class ChatController {
         //Reshuffle field
         Collections.shuffle(fields);
         
-        Vector<Card> cards = new Vector<Card>();
+        Vector<Integer> cards = new Vector<Integer>();
         for (int i=0;i<fields.size();i++) {
             
-            Card card=new Card((int) fields.get(i),false);
-            cards.add(card);
+            cards.add( (Integer) fields.get(i));
+            
         }
 
         game.setGameField(cards);
@@ -171,7 +174,9 @@ public class ChatController {
         //find gamecode
         String gameCode = null;
         Boolean found = false;
-        int cardValue=0;
+        Vector <Integer> cards = new Vector<Integer>();
+        
+        
         //Find room for player with code user.getKey()
         
         for (Map.Entry<String, Game> entry : Games.entrySet()) {
@@ -182,8 +187,62 @@ public class ChatController {
                 if (u.getUserCode().equals(move.getUserCode())) {
                     gameCode = code;
                     found = true;
-                    cardValue=game.getGameField().get(move.getPosition()).getFieldValue();
-                    game.getGameField().get(move.getPosition()).setStatus(true);
+                    
+                    game.getCards().insertElementAt(game.getGameField().get(move.getPosition()), move.getPosition());
+                    if(guess.get(0)==null && guess.get(1)==null){
+                    //set first guess
+                    guess.set(0, move.getPosition());
+                    
+                    nextPlayer = u;
+                    
+                    }
+                    else if (guess.get(0)!=null && guess.get(1)==null){
+                        guess.set(1, move.getPosition());
+                        
+                        if(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
+                        //same cards
+                        //bodovi
+                        
+                        }
+                        
+                        
+                        int index = allUsers.indexOf(u);
+                        int size = allUsers.size();
+                        
+                        if(size==index){
+                            nextPlayer=allUsers.get(0);
+                        }
+                        else{
+                            nextPlayer = allUsers.get(index+1);
+                        }
+      
+                        
+                        
+                      
+                        
+                    
+                    }
+                    else if (guess.get(0)!=null && guess.get(1)!=null){
+                        
+                        
+                        
+                        if(!game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
+                        //different cards
+                        game.getCards().insertElementAt(null, guess.get(0));
+                        game.getCards().insertElementAt(null, guess.get(1));
+                        guess.set(0, null);
+                        guess.set(1, null);
+                        }
+                        
+                        guess.set(0, move.getPosition());
+                        nextPlayer=u;
+                        
+                        
+                    
+                    }
+                    
+                    
+                    cards=game.getCards();
                     break;
                 }
             }
@@ -192,42 +251,18 @@ public class ChatController {
             }
         }
         JSONObject obj=new JSONObject();
-        obj.put("cardValue",cardValue);
-        obj.put("cardIndex", move.getPosition());
         
-     
-        simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
-    }
-    @MessageMapping("/getCardsStatus")
-    public void getCardsStatus(@Payload Move move) {
-
-        //find gamecode
-        String gameCode = null;
-        Boolean found = false;
-        int cardValue=0;
-        //Find room for player with code user.getKey()
-        
-        for (Map.Entry<String, Game> entry : Games.entrySet()) {
-            String code = entry.getKey();
-            Game game = entry.getValue();
-            ArrayList<User> allUsers = game.getUsers();
-            for (User u : allUsers) {
-                if (u.getUserCode().equals(move.getUserCode())) {
-                    gameCode = code;
-                    found = true;
-                    cardValue=game.getGameField().get(move.getPosition()).getFieldValue();
-                    game.getGameField().get(move.getPosition()).setStatus(true);
-                    break;
-                }
-            }
-            if (found) {
-                break;
-            }
+        JSONArray array = new JSONArray();
+        for (Integer card : cards) {
+            JSONObject o = new JSONObject();
+            o.put("value", card);
+            array.add(o);
         }
-        JSONObject obj=new JSONObject();
-        obj.put("cardValue",cardValue);
+        obj.put("nextPlayer",nextPlayer);
+        obj.put("cards",array);
         
      
         simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
     }
+   
 }
