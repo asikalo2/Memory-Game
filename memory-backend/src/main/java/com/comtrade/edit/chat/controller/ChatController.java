@@ -66,13 +66,15 @@ public class ChatController {
             user.setUserCode(id);
             users.add(user);
         }
-        nextPlayer=game.getUsers().get(0);
 
         numberOfCodes = numberOfCodes + game.getNumberOfPlayers();
         //for players
         game.setUsers(users);
         gameV.setUsers(users);
-
+        
+        //firs player is game starter
+        nextPlayer=game.getUsers().get(0);
+        
         //Generate field for game
         Vector fields = new Vector();
         for (int i = 0; i < game.getRows() * game.getRows() / 2; i++) {
@@ -85,13 +87,13 @@ public class ChatController {
         
         Vector<Integer> cards = new Vector<Integer>();
         for (int i=0;i<fields.size();i++) {
-            
-            cards.add( (Integer) fields.get(i));
+            cards.add(null);
             
         }
 
-        game.setGameField(cards);
-
+        game.setGameField(fields);
+        //Set vector of cards on vector of nulls
+        game.setCards(cards);
         //Add new game in HashMap
         Games.put(game.getGameCode(), game);
 
@@ -175,7 +177,7 @@ public class ChatController {
         String gameCode = null;
         Boolean found = false;
         Vector <Integer> cards = new Vector<Integer>();
-        
+        Integer cardValue=0;
         
         //Find room for player with code user.getKey()
         
@@ -186,9 +188,11 @@ public class ChatController {
             for (User u : allUsers) {
                 if (u.getUserCode().equals(move.getUserCode())) {
                     gameCode = code;
+                    
                     found = true;
                     
                     game.getCards().insertElementAt(game.getGameField().get(move.getPosition()), move.getPosition());
+                    cardValue=game.getGameField().get(move.getPosition());
                     if(guess.get(0)==null && guess.get(1)==null){
                     //set first guess
                     guess.set(0, move.getPosition());
@@ -260,7 +264,7 @@ public class ChatController {
         }
         obj.put("nextPlayer",nextPlayer);
         obj.put("cards",array);
-        
+        obj.put("cardValue", cardValue);
      
         simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
     }

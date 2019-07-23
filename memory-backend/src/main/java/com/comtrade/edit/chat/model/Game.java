@@ -31,9 +31,6 @@ public class Game {
         this.gameField = gameField;
     }
     
-
-  
-
     public Vector<Integer> getCards() {
         return cards;
     }

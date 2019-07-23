@@ -279,8 +279,8 @@ export class GameService {
           });
         } else if (game.cardValue) {
           console.log('card u subscibe', game);
-          GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
-          GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
+          //GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
+          //GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
           for (let i = 0; i < game.cards.length; i++) {
             if (game.cards[i].value != null) {
               GameService.cardList[i].hidden = false
@@ -289,12 +289,11 @@ export class GameService {
             else {
               GameService.cardList[i].hidden = false
             }
-
-          //  GameService.cardList[i].hidden = !game.cards[i].status;
           }
           GameService.currentCardValue = JSON.parse(game.cardValue);
           if( GameService.currentCode === game.nextPlayer.userCode) {
             GameService.isCurrentPlayer=true;
+            console.log("prviii")
           }
           else {
             GameService.isCurrentPlayer=false;

@@ -63,6 +63,7 @@ export class GamePage implements OnInit {
     } 
     else if (!GameService.isCurrentPlayer){
       {
+        console.log("Ne moze "+ GameService.currentCode);
         return;
       }
     }
