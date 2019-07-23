@@ -88,7 +88,6 @@ public class ChatController {
         Vector<Integer> cards = new Vector<Integer>();
         for (int i=0;i<fields.size();i++) {
             cards.add(null);
-            
         }
 
         game.setGameField(fields);
@@ -191,7 +190,7 @@ public class ChatController {
                     
                     found = true;
                     
-                    game.getCards().insertElementAt(game.getGameField().get(move.getPosition()), move.getPosition());
+                    game.getCards().set(move.getPosition(), game.getGameField().get(move.getPosition())); //.insertElementAt(game.getGameField().get(move.getPosition()), move.getPosition());
                     cardValue=game.getGameField().get(move.getPosition());
                     if(guess.get(0)==null && guess.get(1)==null){
                     //set first guess
@@ -203,37 +202,35 @@ public class ChatController {
                     else if (guess.get(0)!=null && guess.get(1)==null){
                         guess.set(1, move.getPosition());
                         
-                        if(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
+                        //if(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
                         //same cards
                         //bodovi
                         
-                        }
+                        //}
                         
                         
                         int index = allUsers.indexOf(u);
                         int size = allUsers.size();
+                        logger.info(Integer.toString(index));
                         
-                        if(size==index){
+                        logger.info(Integer.toString(size));
+                        if(size==index+1){
                             nextPlayer=allUsers.get(0);
+                            
+                        logger.info("u ifu");
                         }
                         else{
                             nextPlayer = allUsers.get(index+1);
                         }
       
-                        
-                        
-                      
-                        
                     
                     }
                     else if (guess.get(0)!=null && guess.get(1)!=null){
                         
-                        
-                        
-                        if(!game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
+                        if(!(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1))))){
                         //different cards
-                        game.getCards().insertElementAt(null, guess.get(0));
-                        game.getCards().insertElementAt(null, guess.get(1));
+                        game.getCards().set(guess.get(0), null);
+                        game.getCards().set(guess.get(1), null);
                         guess.set(0, null);
                         guess.set(1, null);
                         }

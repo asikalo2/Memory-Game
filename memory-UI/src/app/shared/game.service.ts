@@ -235,9 +235,16 @@ export class GameService {
   //userCode, position
   getValueOfCard(index: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      //this.generateGrid();
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
+        this.stompClient.subscribe(
+          "/topic/room" + GameService.gameCode,
+          payload => {
+            this.handleGame(payload);
+            resolve(true);
+          });
         this.stompClient.send("/app/memory/sendMove",
           {},
           JSON.stringify({ userCode: GameService.currentCode, position: index })
@@ -281,13 +288,14 @@ export class GameService {
           console.log('card u subscibe', game);
           //GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
           //GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
-          for (let i = 0; i < game.cards.length; i++) {
+          //console.log("velicine "+ GameService.cardList.length+" "+game.cards.length);
+          for (let i = 0; i < game.cards.length-1; i++) {
             if (game.cards[i].value != null) {
               GameService.cardList[i].hidden = false
               GameService.cardList[i].icon = this.iconMap['' + game.cards[i].value]
             }
             else {
-              GameService.cardList[i].hidden = false
+              GameService.cardList[i].hidden = true;
             }
           }
           GameService.currentCardValue = JSON.parse(game.cardValue);
