@@ -118,7 +118,30 @@ export class GameService {
   getCards(): Card[] {
     return GameService.cardList;
   }
+  isGameOver(){
+    let isOver = true;
+    for(let i = 0; i < GameService.cardList.length; i++)
+    {
+      if(GameService.cardList[i].hidden === true){
+        isOver = false;
+      }
+    }
 
+   
+
+    return isOver;
+  }
+  
+  getWiner(){
+    let winner = GameService.game.users[0].username;
+    for(let i = 0; i<GameService.game.users.length-1; i++ ){
+            if(GameService.game.users[i+1].points > GameService.game.users[i].points){
+              winner = GameService.game.users[i+1].username;
+            }
+    }
+
+    return winner;
+  }
   getGameCode(userCode: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
 
