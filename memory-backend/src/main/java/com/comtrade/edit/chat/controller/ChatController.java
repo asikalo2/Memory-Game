@@ -217,7 +217,8 @@ public class ChatController {
 
 
                     } else if (guess.get(0) != null && guess.get(1) != null) {
-
+                        
+                        //logger.info(Integer.toString(guess.get(0)))
                         if (game.getCards().get(guess.get(0)) != (game.getCards().get(guess.get(1)))) {
                             //different cards
                             game.getCards().set(guess.get(0), null);

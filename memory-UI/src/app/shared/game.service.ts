@@ -141,6 +141,8 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
+                  
+              console.log("Subscribe na room za startera") ;
                   this.handleGame(payload);
                   resolve(true);
                 },
@@ -203,6 +205,7 @@ export class GameService {
               this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
+                  "Subscribe na room za startera"
                   this.handleGame(payload);
                   resolve(true);
                 },
@@ -214,6 +217,9 @@ export class GameService {
                   console.log("Subscribe, On complete");
                 }
               );
+
+              console.log("Subscribe na user") ;
+
               this.stompClient.send(
                 "/app/memory/startGame",
                 {},
