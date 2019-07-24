@@ -211,13 +211,8 @@ public class ChatController {
                         
                         int index = allUsers.indexOf(u);
                         int size = allUsers.size();
-                        logger.info(Integer.toString(index));
-                        
-                        logger.info(Integer.toString(size));
                         if(size==index+1){
                             nextPlayer=allUsers.get(0);
-                            
-                        logger.info("u ifu");
                         }
                         else{
                             nextPlayer = allUsers.get(index+1);
@@ -227,14 +222,24 @@ public class ChatController {
                     }
                     else if (guess.get(0)!=null && guess.get(1)!=null){
                         
+                        logger.info(Integer.toString(game.getCards().size()));
+                        
+                        logger.info(Integer.toString(guess.get(0)));
+                        
+                        logger.info(Integer.toString(game.getCards().get(guess.get(0))));
+                        
+                        
+                        logger.info(Integer.toString(guess.get(1)));
+                        
+                        logger.info(Integer.toString(game.getCards().get(guess.get(1))));
                         if(!(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1))))){
                         //different cards
                         game.getCards().set(guess.get(0), null);
                         game.getCards().set(guess.get(1), null);
+                        
+                        }
                         guess.set(0, null);
                         guess.set(1, null);
-                        }
-                        
                         guess.set(0, move.getPosition());
                         nextPlayer=u;
                         
