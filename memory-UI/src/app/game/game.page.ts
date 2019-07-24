@@ -17,7 +17,7 @@ export class GamePage implements OnInit {
   numberList: number[] = [];
   open1: boolean = false;
   open2: boolean = false;
- 
+
 
   private iconMap = {
     "1": "basket", "2": "contract", "3": "expand", "4": "flashlight", "5": "happy", "6": "jet", "7": "planet", "8": "rose",
@@ -28,15 +28,15 @@ export class GamePage implements OnInit {
 
   game: Game;
   hideCodesButton: boolean = false;
-  constructor(public _gameService: GameService, 
+  constructor(public _gameService: GameService,
     private router: Router,
-     private storage: Storage
-     ) {
+    private storage: Storage
+  ) {
 
   }
 
   ngOnInit() {
-   
+
   }
   ngAfterViewInit() {
     this.storage.ready().then(() => {
@@ -51,8 +51,8 @@ export class GamePage implements OnInit {
       if (!GameService.isStarter) {
         console.log(GameService.gameJoin);
         this.hideCodesButton = true;
-      }   
-     });
+      }
+    });
     console.log('game page', this.game);
   }
 
@@ -60,42 +60,44 @@ export class GamePage implements OnInit {
     if (!card.hidden) {
       console.log(card.hidden);
       return;
-    } 
-    else if (!GameService.isCurrentPlayer){
-      {
-        console.log("Ne moze "+ GameService.currentCode);
-        return;
-      }
+    } else if (!GameService.isCurrentPlayer) {
+      console.log("Ne moze " + GameService.currentCode);
+      return;
     }
+
+    if (GameService.isSending) {
+      return;
+    } else {
+      GameService.isSending = true;
+    }
+
     this.storage.ready().then(() => {
       this.storage.get('joinUser').then((valString) => {
         let key = GameService.currentCode;
         let username = GameService.username;
         console.log(key + username);
-
         console.log("Poziv onClick");
+        this._gameService.getValueOfCard(card.index);
+        if (!this.open1) {
+          this.open1 = true;
+        } else if (!this.open2) {
+          this.open2 = true;
+        }
 
-    this._gameService.getValueOfCard(card.index);
-   if(!this.open1){
-    this.open1 = true;
-   } else if (!this.open2 ){
-      this.open2 = true;
-   }
-   
       });
     });
 
     let val = this._gameService.getCurrentValue(card.index).then((num) => {
       console.log("uslaa", num);
       card.icon = this.iconMap['' + num];
-      
-    }).catch((err) => { 
+
+    }).catch((err) => {
       console.log(err);
-     
+
     });;
-    
-    
-    
+
+
+
     //card.hidden = false;
 
     // ...
@@ -103,5 +105,5 @@ export class GamePage implements OnInit {
 
 
 
- 
+
 }

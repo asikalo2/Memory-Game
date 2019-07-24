@@ -26,6 +26,9 @@ export class GameService {
   public static currentCardValue: number;
   public static cardList: Card[] = [];
 
+  public static isSending: boolean = false;
+
+
   public numberList: number[];
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
@@ -48,6 +51,10 @@ export class GameService {
   }
   setUsername(username: string) {
     GameService.username = username;
+  }
+
+  getGame() {
+    return GameService.game;
   }
 
   createGame(
@@ -116,7 +123,7 @@ export class GameService {
     return new Promise((resolve, reject) => {
 
       //starter start game
-      GameService.isCurrentPlayer=true;
+      GameService.isCurrentPlayer = true;
 
       GameService.currentCode = userCode;
       let ws = new SockJS(this.serverUrl);
@@ -277,21 +284,23 @@ export class GameService {
           GameService.game.rows = game.rows;
           GameService.game.users = game.users;
           this.storage.ready().then(() => {
-            this.storage
-              .set("game", JSON.stringify(GameService.game))
-              .then(value => {
-                console.log("game postavljeno", value);
+            this.storage.set("game", JSON.stringify(GameService.game)).then(value => {
+              console.log("game postavljeno", value);
 
-              });
+            });
           });
         } else if (game.cardValue) {
+
           console.log('card u subscibe', game);
-          //GameService.cardList[game.cardIndex].number = JSON.parse(game.cardValue);
-          //GameService.cardList[game.cardIndex].icon = this.iconMap['' + GameService.cardList[game.cardIndex].number];
-          //console.log("velicine "+ GameService.cardList.length+" "+game.cards.length);
-          for (let i = 0; i < game.cards.length-1; i++) {
+
+          GameService.game.users.forEach(user => {
+            if (user.username === game.nextPlayer.username)
+            console.log("Sad dobije poen" + game.nextPlayer.points)
+              user.points = game.nextPlayer.points;
+          });
+          for (let i = 0; i < game.cards.length; i++) {
             if (game.cards[i].value != null) {
-              GameService.cardList[i].hidden = false
+              GameService.cardList[i].hidden = false;
               GameService.cardList[i].icon = this.iconMap['' + game.cards[i].value]
             }
             else {
@@ -299,13 +308,14 @@ export class GameService {
             }
           }
           GameService.currentCardValue = JSON.parse(game.cardValue);
-          if( GameService.currentCode === game.nextPlayer.userCode) {
-            GameService.isCurrentPlayer=true;
+          if (GameService.currentCode === game.nextPlayer.userCode) {
+            GameService.isCurrentPlayer = true;
             console.log("prviii")
           }
           else {
-            GameService.isCurrentPlayer=false;
+            GameService.isCurrentPlayer = false;
           }
+          GameService.isSending = false;
         }
 
       });

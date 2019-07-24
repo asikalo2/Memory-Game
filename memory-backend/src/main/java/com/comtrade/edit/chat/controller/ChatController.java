@@ -36,6 +36,7 @@ public class ChatController {
     public static ArrayList<Integer> guess = new ArrayList<Integer>(Arrays.asList(null,null));
     public static Integer numberOfCodes = 1;
     public static User nextPlayer;
+    public static User currentPlayer;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
     
 
@@ -73,6 +74,7 @@ public class ChatController {
         gameV.setUsers(users);
         
         //firs player is game starter
+        currentPlayer=game.getUsers().get(0);
         nextPlayer=game.getUsers().get(0);
         
         //Generate field for game
@@ -95,7 +97,8 @@ public class ChatController {
         game.setCards(cards);
         //Add new game in HashMap
         Games.put(game.getGameCode(), game);
-
+        guess.set(0, null);
+        guess.set(1, null);
         return gameV;
     }
 
@@ -177,7 +180,6 @@ public class ChatController {
         Boolean found = false;
         Vector <Integer> cards = new Vector<Integer>();
         Integer cardValue=0;
-        
         //Find room for player with code user.getKey()
         
         for (Map.Entry<String, Game> entry : Games.entrySet()) {
@@ -187,57 +189,43 @@ public class ChatController {
             for (User u : allUsers) {
                 if (u.getUserCode().equals(move.getUserCode())) {
                     gameCode = code;
-                    
                     found = true;
                     
                     game.getCards().set(move.getPosition(), game.getGameField().get(move.getPosition())); //.insertElementAt(game.getGameField().get(move.getPosition()), move.getPosition());
                     cardValue=game.getGameField().get(move.getPosition());
+                    
                     if(guess.get(0)==null && guess.get(1)==null){
                     //set first guess
                     guess.set(0, move.getPosition());
-                    
                     nextPlayer = u;
                     
                     }
                     else if (guess.get(0)!=null && guess.get(1)==null){
                         guess.set(1, move.getPosition());
                         
-                        //if(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1)))){
-                        //same cards
-                        //bodovi
-                        
-                        //}
-                        
+                        if(game.getCards().get(guess.get(0))==(game.getCards().get(guess.get(1)))){
+                        u.setPoints(u.getPoints()+1);
+                        }
                         
                         int index = allUsers.indexOf(u);
                         int size = allUsers.size();
-                        if(size==index+1){
+                        if(size-1==index){
                             nextPlayer=allUsers.get(0);
                         }
                         else{
                             nextPlayer = allUsers.get(index+1);
                         }
-      
-                    
+                        
                     }
                     else if (guess.get(0)!=null && guess.get(1)!=null){
                         
-                        logger.info(Integer.toString(game.getCards().size()));
-                        
-                        logger.info(Integer.toString(guess.get(0)));
-                        
-                        logger.info(Integer.toString(game.getCards().get(guess.get(0))));
-                        
-                        
-                        logger.info(Integer.toString(guess.get(1)));
-                        
-                        logger.info(Integer.toString(game.getCards().get(guess.get(1))));
-                        if(!(game.getCards().get(guess.get(0)).equals(game.getCards().get(guess.get(1))))){
+                        if(game.getCards().get(guess.get(0))!=(game.getCards().get(guess.get(1)))){
                         //different cards
                         game.getCards().set(guess.get(0), null);
                         game.getCards().set(guess.get(1), null);
                         
                         }
+                        
                         guess.set(0, null);
                         guess.set(1, null);
                         guess.set(0, move.getPosition());

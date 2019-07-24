@@ -20,7 +20,7 @@
       </div>
       <div *ngIf="show" style="display: inline-block; width:100%">
           <div class="players">Players:
-              <div class="pl" *ngFor="let pl of game.users"> {{pl.username}}  | {{pl.points}} pts.  </div>
+              <div class="pl" *ngFor="let pl of _gameService.getGame().users"> {{pl.username}}  | {{pl.points}} pts.  </div>
               
              </div>  
               
