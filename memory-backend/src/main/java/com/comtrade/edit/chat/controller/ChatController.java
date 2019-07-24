@@ -225,7 +225,6 @@ public class ChatController {
 
                         }
 
-                        guess.set(0, null);
                         guess.set(1, null);
                         guess.set(0, move.getPosition());
                         nextPlayer = u;

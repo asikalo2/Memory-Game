@@ -246,12 +246,12 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
-        this.stompClient.subscribe(
-          "/topic/room" + GameService.gameCode,
-          payload => {
-            this.handleGame(payload);
-            resolve(true);
-          });
+        // this.stompClient.subscribe(
+        //   "/topic/room" + GameService.gameCode,
+        //   payload => {
+        //     this.handleGame(payload);
+        //     resolve(true);
+        //   });
         this.stompClient.send("/app/memory/sendMove",
           {},
           JSON.stringify({ userCode: GameService.currentCode, position: index })
@@ -295,7 +295,7 @@ export class GameService {
 
           GameService.game.users.forEach(user => {
             if (user.username === game.currentPlayer.username) {
-            console.log("Sad dobije poen " + game.currentPlayer.points + " " + game.currentPlayer.username)
+              console.log("Sad dobije poen " + game.currentPlayer.points + " " + game.currentPlayer.username)
               user.points = game.currentPlayer.points;
             }
           });
