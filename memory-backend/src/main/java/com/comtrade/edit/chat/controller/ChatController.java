@@ -191,34 +191,54 @@ public class ChatController {
 
                     game.getCards().set(move.getPosition(), game.getGameField().get(move.getPosition()));
                     cardValue = game.getGameField().get(move.getPosition());
-                    
-                    currentPlayer=u;
-                    
+
+                    currentPlayer = u;
+
                     if (guess.get(0) == null && guess.get(1) == null) {
                         //set first guess
                         guess.set(0, move.getPosition());
                         nextPlayer = u;
 
                     } else if (guess.get(0) != null && guess.get(1) == null) {
+
                         guess.set(1, move.getPosition());
 
-                        int index = allUsers.indexOf(u);
-                        int size = allUsers.size();
-                        if (size - 1 == index) {
-                            nextPlayer = allUsers.get(0);
-                        } else {
-                            nextPlayer = allUsers.get(index + 1);
-                        }
-                        
-                        if (game.getCards().get(guess.get(0)) == (game.getCards().get(guess.get(1)))) {
-                            //u.setPoints(u.getPoints() + 1);
-                            currentPlayer.setPoints(currentPlayer.getPoints() + 1);
-                        }
+                        if (guess.get(0) != guess.get(1)) {  //Jer je javljalo gresku
 
+                            logger.info("Igrao oba puta");
+                            logger.info(Integer.toString(guess.get(0)));
+                            logger.info(Integer.toString(guess.get(1)));
+                            
+                            int index = allUsers.indexOf(u);
+                            int size = allUsers.size();
+                            if (size - 1 == index) {
+                                nextPlayer = allUsers.get(0);
+                            } else {
+                                nextPlayer = allUsers.get(index + 1);
+                            }
+
+                            if (game.getCards().get(guess.get(0)) == (game.getCards().get(guess.get(1)))) {
+                                //u.setPoints(u.getPoints() + 1);
+                                currentPlayer.setPoints(currentPlayer.getPoints() + 1);
+                                logger.info("Dodijeli poene jer su jednaki " + Integer.toString(guess.get(0)) + " i " + Integer.toString(guess.get(1)));
+                            }
+                        } else {
+                            nextPlayer = u;
+                            guess.set(1, null);
+                            logger.info("greska");
+                        }
+                  
 
                     } else if (guess.get(0) != null && guess.get(1) != null) {
+
                         
-                        //logger.info(Integer.toString(guess.get(0)))
+                            logger.info("Novi igra");
+                        logger.info(Integer.toString(guess.get(0)));
+                        logger.info(Integer.toString(guess.get(1)));
+
+                        logger.info(Integer.toString(game.getCards().get(guess.get(0))));
+                        logger.info(Integer.toString(game.getCards().get(guess.get(1))));
+
                         if (game.getCards().get(guess.get(0)) != (game.getCards().get(guess.get(1)))) {
                             //different cards
                             game.getCards().set(guess.get(0), null);

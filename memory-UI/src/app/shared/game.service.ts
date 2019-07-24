@@ -33,7 +33,11 @@ export class GameService {
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
   private stompClient;
-  private connected: boolean = false;
+  private stompNewGameSubscription;
+  private stompUserSubscription;
+  private stompUser2Subscription;
+  private stompRoomSubscription;
+  private stompRoom2Subscription;
 
   private iconMap = {
     "1": "basket", "2": "contract", "3": "expand", "4": "flashlight", "5": "happy", "6": "jet", "7": "planet", "8": "rose",
@@ -71,7 +75,10 @@ export class GameService {
       this.stompClient.connect({}, () => {
 
         // listen to new game
-        this.stompClient.subscribe(
+        if (this.stompNewGameSubscription) {
+          this.stompNewGameSubscription.unsubscribe();
+        }
+        this.stompNewGameSubscription = this.stompClient.subscribe(
           "/topic/newGame",
           payload => {
             var game = JSON.parse(payload.body);
@@ -152,7 +159,10 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
-        this.stompClient.subscribe(
+        if (this.stompUserSubscription) {
+          this.stompUserSubscription.unsubscribe();
+        }
+        this.stompUserSubscription = this.stompClient.subscribe(
           "/topic/user" + userCode,
           payload => {
             var data = JSON.parse(payload.body);
@@ -161,16 +171,21 @@ export class GameService {
             if (!data || data.gameCode === null) {
               reject();
             } else {
-              this.stompClient.subscribe(
+              if (this.stompRoomSubscription) {
+                this.stompRoomSubscription.unsubscribe();
+              }
+              this.stompRoomSubscription = this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
-                  
-              console.log("Subscribe na room za startera") ;
+
+                  console.log("Subscribe na room za startera");
                   this.handleGame(payload);
+                  GameService.isSending = false;
                   resolve(true);
                 },
                 error => {
                   console.log("Subscribe: error: " + error);
+                  GameService.isSending = false;
                   reject();
                 },
                 () => {
@@ -216,7 +231,10 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
-        this.stompClient.subscribe(
+        if (this.stompUser2Subscription) {
+          this.stompUser2Subscription.unsubscribe();
+        }
+        this.stompUser2Subscription = this.stompClient.subscribe(
           "/topic/user" + userCode,
           payload => {
             var data = JSON.parse(payload.body);
@@ -225,15 +243,20 @@ export class GameService {
             if (!data || data.gameCode === null) {
               reject();
             } else {
-              this.stompClient.subscribe(
+              if (this.stompRoom2Subscription) {
+                this.stompRoom2Subscription.unsubscribe();
+              }
+              this.stompRoom2Subscription = this.stompClient.subscribe(
                 "/topic/room" + data.gameCode,
                 payload => {
                   "Subscribe na room za startera"
                   this.handleGame(payload);
+                  GameService.isSending = false;
                   resolve(true);
                 },
                 error => {
                   console.log("Subscribe: error: " + error);
+                  GameService.isSending = false;
                   reject();
                 },
                 () => {
@@ -241,7 +264,7 @@ export class GameService {
                 }
               );
 
-              console.log("Subscribe na user") ;
+              console.log("Subscribe na user");
 
               this.stompClient.send(
                 "/app/memory/startGame",
@@ -345,7 +368,6 @@ export class GameService {
           else {
             GameService.isCurrentPlayer = false;
           }
-          GameService.isSending = false;
         }
 
       });
