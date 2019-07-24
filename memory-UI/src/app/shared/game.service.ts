@@ -294,9 +294,10 @@ export class GameService {
           console.log('card u subscibe', game);
 
           GameService.game.users.forEach(user => {
-            if (user.username === game.nextPlayer.username)
-            console.log("Sad dobije poen" + game.nextPlayer.points)
-              user.points = game.nextPlayer.points;
+            if (user.username === game.currentPlayer.username) {
+            console.log("Sad dobije poen " + game.currentPlayer.points + " " + game.currentPlayer.username)
+              user.points = game.currentPlayer.points;
+            }
           });
           for (let i = 0; i < game.cards.length; i++) {
             if (game.cards[i].value != null) {
