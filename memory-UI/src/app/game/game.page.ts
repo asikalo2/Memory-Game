@@ -55,10 +55,10 @@ export class GamePage implements OnInit {
   }
 
   flipCard(card: Card) {
-    if(this._gameService.isGameOver()){
-      let winner = this._gameService.getWiner();
-      this.openSnackBar2(`Winner is ${winner}. Congrats`, 'Close');
-    }
+    // if(this._gameService.isGameOver()){
+    //   let winner = this._gameService.getWinner();
+    //   this.openSnackBar2(`Winner is ${winner}. Congrats`, 'Close');
+    // }
     if (!card.hidden) {
     
       return;

@@ -9,6 +9,7 @@ import { User } from "../models/user";
 import { Game } from "../models/game";
 import { Storage } from "@ionic/storage";
 import { Card } from '../models/card';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: "root"
@@ -46,7 +47,7 @@ export class GameService {
     "25": "school", "26": "star", "27": "logo-instagram", "28": "logo-youtube", "29": "logo-android", "30": "logo-apple", "31": "logo-facebook", "32": "logo-freebsd-devil",
   }
 
-  constructor(public storage: Storage) {
+  constructor(public storage: Storage, private snackBar: MatSnackBar) {
     this.initializeWebSocket();
   }
   initializeWebSocket() {
@@ -139,7 +140,7 @@ export class GameService {
     return isOver;
   }
   
-  getWiner(){
+  getWinner(){
     let winner = GameService.game.users[0].username;
     for(let i = 0; i<GameService.game.users.length-1; i++ ){
             if(GameService.game.users[i+1].points > GameService.game.users[i].points){
@@ -351,19 +352,25 @@ export class GameService {
               user.points = game.currentPlayer.points;
             }
           });
+          
           for (let i = 0; i < game.cards.length; i++) {
             if (game.cards[i].value != null) {
               GameService.cardList[i].hidden = false;
-              GameService.cardList[i].icon = this.iconMap['' + game.cards[i].value]
+              GameService.cardList[i].icon = this.iconMap['' + game.cards[i].value];
             }
             else {
               GameService.cardList[i].hidden = true;
             }
           }
+          if(this.isGameOver()){
+            
+            this.openSnackBar2(`Winner is: ${this.getWinner()}!`,"Congrats!")
+          }
           GameService.currentCardValue = JSON.parse(game.cardValue);
           if (GameService.currentCode === game.nextPlayer.userCode) {
             GameService.isCurrentPlayer = true;
-            console.log("prviii")
+            this.openSnackBar("You are current player!", "Done");
+           
           }
           else {
             GameService.isCurrentPlayer = false;
@@ -388,6 +395,17 @@ export class GameService {
 
 
 
+    });
+  }
+  openSnackBar(message: string, description: string): void {
+    this.snackBar.open(message, description, {
+      duration: 2000
+    });
+  }
+
+  openSnackBar2(message: string, description: string): void {
+    this.snackBar.open(message, description, {
+      duration: 20000
     });
   }
 }
