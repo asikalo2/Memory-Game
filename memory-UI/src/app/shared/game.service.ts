@@ -55,8 +55,6 @@ export class GameService {
     if (GameService.serverIPAddress !== null) {
       this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
     }
-    let ws = new SockJS(this.serverUrl);
-    this.stompClient = Stomp.over(ws);
   }
   setUsername(username: string) {
     GameService.username = username;
@@ -71,6 +69,7 @@ export class GameService {
     playerNumber: number
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      this.initializeWebSocket();
       GameService.gameStarter.username = GameService.username;
       GameService.gameStarter.rowsNumber = rowsNumber;
       GameService.gameStarter.playerNumber = playerNumber;
