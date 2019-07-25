@@ -5,30 +5,32 @@
 
 
 .username-label1 {
-  margin-left: 2%;
+  margin-left: 5%;
   color: #3498db;
   font-weight: bold;
  
 }
 
 .label-separator{
-  height: 1rem; 
+  height: 0.8rem; 
+}
+.label-1{
+  margin-left: 8%;
 }
 
 .username-label2 {
-  margin-left: 2%;
+  margin-left: 5%;
   color: #3498db;
   font-weight: bold;
-  margin-top:10%;
+  //margin-top:10%;
 
 }
 
 .login-btn{
-  margin-left: 15%;
-  margin-top: 15%;
+ // margin-top: 40%;
   height: 15%;
-  width: 70%;
-  border-radius: 25px;
+  width: 99%;
+  border-radius: 30px;
   size: large;
   display: inline-block;
   background-color: #3498db;

@@ -42,4 +42,5 @@ export class HomePage implements OnInit {
     console.log( this.loginForm.get("serverAddress").value);
     this.router.navigate(["/start"]);
   }
+  
 }
