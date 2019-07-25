@@ -1,7 +1,6 @@
 package com.comtrade.edit.chat.controller;
 
 import com.comtrade.edit.chat.listener.WebSocketEventListener;
-import com.comtrade.edit.chat.model.Card;
 import com.comtrade.edit.chat.model.Game;
 import com.comtrade.edit.chat.model.User;
 import com.comtrade.edit.chat.model.Message;
@@ -34,7 +33,10 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     public static HashMap<String, Game> Games = new HashMap<String, Game>();
+    public static ArrayList<Integer> guess = new ArrayList<Integer>(Arrays.asList(null, null));
     public static Integer numberOfCodes = 1;
+    public static User nextPlayer;
+    public static User currentPlayer;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
@@ -70,6 +72,10 @@ public class ChatController {
         game.setUsers(users);
         gameV.setUsers(users);
 
+        //firs player is game starter
+        currentPlayer = game.getUsers().get(0);
+        nextPlayer = game.getUsers().get(0);
+
         //Generate field for game
         Vector fields = new Vector();
         for (int i = 0; i < game.getRows() * game.getRows() / 2; i++) {
@@ -79,19 +85,19 @@ public class ChatController {
 
         //Reshuffle field
         Collections.shuffle(fields);
-        
-        Vector<Card> cards = new Vector<Card>();
-        for (int i=0;i<fields.size();i++) {
-            
-            Card card=new Card(i,false);
-            cards.add(card);
+
+        Vector<Integer> cards = new Vector<Integer>();
+        for (int i = 0; i < fields.size(); i++) {
+            cards.add(null);
         }
 
-        game.setGameField(cards);
-
+        game.setGameField(fields);
+        //Set vector of cards on vector of nulls
+        game.setCards(cards);
         //Add new game in HashMap
         Games.put(game.getGameCode(), game);
-
+        guess.set(0, null);
+        guess.set(1, null);
         return gameV;
     }
 
@@ -171,9 +177,9 @@ public class ChatController {
         //find gamecode
         String gameCode = null;
         Boolean found = false;
-        int cardValue=0;
+        Vector<Integer> cards = new Vector<Integer>();
+        Integer cardValue = 0;
         //Find room for player with code user.getKey()
-        
         for (Map.Entry<String, Game> entry : Games.entrySet()) {
             String code = entry.getKey();
             Game game = entry.getValue();
@@ -182,8 +188,71 @@ public class ChatController {
                 if (u.getUserCode().equals(move.getUserCode())) {
                     gameCode = code;
                     found = true;
-                    cardValue=game.getGameField().get(move.getPosition()).getFieldValue();
-                    game.getGameField().get(move.getPosition()).setStatus(true);
+
+                    game.getCards().set(move.getPosition(), game.getGameField().get(move.getPosition()));
+                    cardValue = game.getGameField().get(move.getPosition());
+
+                    currentPlayer = u;
+
+                    if (guess.get(0) == null && guess.get(1) == null) {
+                        //set first guess
+                        guess.set(0, move.getPosition());
+                        nextPlayer = u;
+
+                    } else if (guess.get(0) != null && guess.get(1) == null) {
+
+                        guess.set(1, move.getPosition());
+
+                        if (guess.get(0) != guess.get(1)) {  //Jer je javljalo gresku
+
+                            logger.info("Igrao oba puta");
+                            logger.info(Integer.toString(guess.get(0)));
+                            logger.info(Integer.toString(guess.get(1)));
+                            
+                            int index = allUsers.indexOf(u);
+                            int size = allUsers.size();
+                            if (size - 1 == index) {
+                                nextPlayer = allUsers.get(0);
+                            } else {
+                                nextPlayer = allUsers.get(index + 1);
+                            }
+
+                            if (game.getCards().get(guess.get(0)) == (game.getCards().get(guess.get(1)))) {
+                                //u.setPoints(u.getPoints() + 1);
+                                currentPlayer.setPoints(currentPlayer.getPoints() + 1);
+                                logger.info("Dodijeli poene jer su jednaki " + Integer.toString(guess.get(0)) + " i " + Integer.toString(guess.get(1)));
+                            }
+                        } else {
+                            nextPlayer = u;
+                            guess.set(1, null);
+                            logger.info("greska");
+                        }
+                  
+
+                    } else if (guess.get(0) != null && guess.get(1) != null) {
+
+                        
+                            logger.info("Novi igra");
+                        logger.info(Integer.toString(guess.get(0)));
+                        logger.info(Integer.toString(guess.get(1)));
+
+                        logger.info(Integer.toString(game.getCards().get(guess.get(0))));
+                        logger.info(Integer.toString(game.getCards().get(guess.get(1))));
+
+                        if (game.getCards().get(guess.get(0)) != (game.getCards().get(guess.get(1)))) {
+                            //different cards
+                            game.getCards().set(guess.get(0), null);
+                            game.getCards().set(guess.get(1), null);
+
+                        }
+
+                        guess.set(1, null);
+                        guess.set(0, move.getPosition());
+                        nextPlayer = u;
+
+                    }
+
+                    cards = game.getCards();
                     break;
                 }
             }
@@ -191,11 +260,20 @@ public class ChatController {
                 break;
             }
         }
-        JSONObject obj=new JSONObject();
-        obj.put("cardValue",cardValue);
-        
-     
+        JSONObject obj = new JSONObject();
+
+        JSONArray array = new JSONArray();
+        for (Integer card : cards) {
+            JSONObject o = new JSONObject();
+            o.put("value", card);
+            array.add(o);
+        }
+        obj.put("nextPlayer", nextPlayer);
+        obj.put("cards", array);
+        obj.put("cardValue", cardValue);
+        obj.put("currentPlayer", currentPlayer);
+
         simpMessagingTemplate.convertAndSend("/topic/room" + gameCode, obj);
     }
-   
+
 }

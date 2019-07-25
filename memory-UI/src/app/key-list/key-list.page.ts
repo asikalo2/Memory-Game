@@ -61,8 +61,9 @@ export class KeyListPage {
         this.code2.push(GameService.gameStarter.users[index].code);
       }
       this.showKeys = true;
-    }, 5000);
+    }, 2000);
   }
+
   nextPage() {
     console.log(GameService.gameStarter);
     if (GameService.gameStarter.username !== '') {

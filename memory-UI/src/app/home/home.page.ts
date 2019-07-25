@@ -15,7 +15,7 @@ import { GameService } from "../shared/game.service";
 })
 export class HomePage implements OnInit {
   private loginForm: FormGroup;
-
+ 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
@@ -24,7 +24,8 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      username: ["", Validators.required]
+      username: ["", Validators.required],
+      serverAddress: ["localhost:8080"]
     });
   }
 
@@ -37,7 +38,8 @@ export class HomePage implements OnInit {
     }
 
     this._gameService.setUsername(this.loginForm.get("username").value);
-  
+    GameService.serverIPAddress = this.loginForm.get("serverAddress").value;
+    console.log( this.loginForm.get("serverAddress").value);
     this.router.navigate(["/start"]);
   }
   

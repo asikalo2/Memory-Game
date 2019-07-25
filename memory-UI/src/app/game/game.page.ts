@@ -4,6 +4,8 @@ import { Card } from '../models/card';
 import { Game } from '../models/game';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
 
 @Component({
   selector: 'app-game',
@@ -15,7 +17,9 @@ export class GamePage implements OnInit {
   rows: number;
   hidden: boolean = false;
   numberList: number[] = [];
-  cardList: Card[] = [];
+  open1: boolean = false;
+  open2: boolean = false;
+
 
   private iconMap = {
     "1": "basket", "2": "contract", "3": "expand", "4": "flashlight", "5": "happy", "6": "jet", "7": "planet", "8": "rose",
@@ -25,60 +29,99 @@ export class GamePage implements OnInit {
   }
 
   game: Game;
-  hideCodesButton: boolean = false;
-  constructor(public _gameService: GameService, 
+  
+  constructor(public _gameService: GameService,
     private router: Router,
-     private storage: Storage
-     ) {
+    private storage: Storage,
+    private snackBar: MatSnackBar
+  ) {
 
   }
 
   ngOnInit() {
-   
+
   }
   ngAfterViewInit() {
     this.storage.ready().then(() => {
-      this.storage.get('game').then((val) => {
+      this.checkGameAsync().then((val) => {
         let valJson = JSON.parse(val);
-        console.log(JSON.parse(val));
         this.game = valJson;
         this.rows = valJson.rows;
         this.show = true;
-        this.generateGrid();
+        this._gameService.generateGrid();
       });
-      if (!GameService.isStarter) {
-        console.log(GameService.gameJoin);
-        this.hideCodesButton = true;
-      }   
-     });
-    console.log('game page', this.game);
+    });
   }
+
+  public checkGameAsync(): Promise<string> {
+    return this.storage.get('game').then((val) => {
+      if (val) {
+        return val;
+      } else {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            this.checkGameAsync().then((val) => {
+              resolve(val);
+            }).catch(() => {
+              reject();
+            });
+          }, 1000);
+        })
+      }
+    });
+  }
+
   flipCard(card: Card) {
     if (!card.hidden) {
-      console.log(card.hidden);
+      return;
+    } else if (!GameService.isCurrentPlayer) {
+      this.openSnackBar("Error!", "Not your turn!");
       return;
     }
-    console.log(card.hidden);
 
-    card.hidden = false;
+    if (GameService.isSending) {
+      return;
+    } else {
+      GameService.isSending = true;
+    }
+
+    var allConnected = true;
+    var users = GameService.game.users;
+    users.forEach(user => {  
+      if(user.username==null) {
+        allConnected=false;
+        this.openSnackBar("Error!", "Wait for other players!");
+        return;
+      }
+    });
+
+    if(allConnected) {
+    let val = this._gameService.getCurrentValue(card.index).then((num) => {
+      card.icon = this.iconMap['' + num];
+
+    }).catch((err) => {
+      console.log(err);
+
+    });;
+
+  }
+
+    //card.hidden = false;
 
     // ...
   }
 
-  generateGrid() {
-    
-    this.router.navigate(["/game"]);
-    let num = this.game.rows * this.game.rows;
-    for (let i = 0; i < num; i++) {
-      const card = new Card();
-      card.index = i;
-      card.number = 1;
-      card.icon = this.iconMap['' + 1];
-      card.hidden = true;
-
-      this.cardList.push(card);
-    }
+  openSnackBar(message: string, description: string): void {
+    this.snackBar.open(message, description, {
+      duration: 2000
+    });
   }
 
- 
+  openSnackBar2(message: string, description: string): void {
+    this.snackBar.open(message, description, {
+      duration: 20000
+    });
+  }
+
+
 }
