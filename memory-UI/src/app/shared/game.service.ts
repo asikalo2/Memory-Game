@@ -33,6 +33,7 @@ export class GameService {
   public numberList: number[];
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
+  public static serverIPAddress = null;
   private stompClient;
   private stompNewGameSubscription;
   private stompUserSubscription;
@@ -51,6 +52,9 @@ export class GameService {
     this.initializeWebSocket();
   }
   initializeWebSocket() {
+    if (GameService.serverIPAddress !== null) {
+      this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+    }
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
   }
@@ -72,6 +76,13 @@ export class GameService {
       GameService.gameStarter.playerNumber = playerNumber;
       GameService.isStarter = true;
       let ws = new SockJS(this.serverUrl);
+      if (GameService.serverIPAddress !== null) {
+        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+        console.log("Adressa servera: ", this.serverUrl);
+        console.log("IP servera: ", GameService.serverIPAddress);
+      }
+
+
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
 
@@ -126,26 +137,25 @@ export class GameService {
   getCards(): Card[] {
     return GameService.cardList;
   }
-  isGameOver(){
+  isGameOver() {
     let isOver = true;
-    for(let i = 0; i < GameService.cardList.length; i++)
-    {
-      if(GameService.cardList[i].hidden === true){
+    for (let i = 0; i < GameService.cardList.length; i++) {
+      if (GameService.cardList[i].hidden === true) {
         isOver = false;
       }
     }
 
-   
+
 
     return isOver;
   }
-  
-  getWinner(){
+
+  getWinner() {
     let winner = GameService.game.users[0].username;
-    for(let i = 0; i<GameService.game.users.length-1; i++ ){
-            if(GameService.game.users[i+1].points > GameService.game.users[i].points){
-              winner = GameService.game.users[i+1].username;
-            }
+    for (let i = 0; i < GameService.game.users.length - 1; i++) {
+      if (GameService.game.users[i + 1].points > GameService.game.users[i].points) {
+        winner = GameService.game.users[i + 1].username;
+      }
     }
 
     return winner;
@@ -157,6 +167,9 @@ export class GameService {
       GameService.isCurrentPlayer = true;
 
       GameService.currentCode = userCode;
+      if (GameService.serverIPAddress !== null) {
+        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+      }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
@@ -229,6 +242,9 @@ export class GameService {
       this.storage.set("joinUser", JSON.stringify(GameService.gameJoin));
 
       console.log("Join player:", GameService.gameJoin);
+      if (GameService.serverIPAddress !== null) {
+        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+      }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
@@ -296,6 +312,9 @@ export class GameService {
   getValueOfCard(index: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
       //this.generateGrid();
+      if (GameService.serverIPAddress !== null) {
+        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+      }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
@@ -352,7 +371,7 @@ export class GameService {
               user.points = game.currentPlayer.points;
             }
           });
-          
+
           for (let i = 0; i < game.cards.length; i++) {
             if (game.cards[i].value != null) {
               GameService.cardList[i].hidden = false;
@@ -362,15 +381,15 @@ export class GameService {
               GameService.cardList[i].hidden = true;
             }
           }
-          if(this.isGameOver()){
-            
-            this.openSnackBar2(`Winner is: ${this.getWinner()}!`,"Congrats!")
+          if (this.isGameOver()) {
+
+            this.openSnackBar2(`Winner is: ${this.getWinner()}!`, "Congrats!")
           }
           GameService.currentCardValue = JSON.parse(game.cardValue);
           if (GameService.currentCode === game.nextPlayer.userCode) {
             GameService.isCurrentPlayer = true;
             this.openSnackBar("You are current player!", "Done");
-           
+
           }
           else {
             GameService.isCurrentPlayer = false;
