@@ -102,9 +102,12 @@ export class GameService {
               );
               GameService.gameStarter.users.push(usr);
             }
-            this.storage.set("startUser", JSON.stringify(GameService.gameStarter)).then(value => {
-              console.log("startUser postavljeno", value);
-              resolve(true);
+
+            this.storage.ready().then(() => {
+              this.storage.set("startUser", JSON.stringify(GameService.gameStarter)).then(value => {
+                console.log("startUser postavljeno", value);
+                resolve(true);
+              });
             });
 
           },
@@ -238,7 +241,10 @@ export class GameService {
       GameService.gameJoin.username = username;
       GameService.gameJoin.key = userCode;
       GameService.currentCode = userCode;
-      this.storage.set("joinUser", JSON.stringify(GameService.gameJoin));
+
+      this.storage.ready().then(() => {
+        this.storage.set("joinUser", JSON.stringify(GameService.gameJoin));
+      });
 
       console.log("Join player:", GameService.gameJoin);
       if (GameService.serverIPAddress !== null) {
@@ -349,11 +355,8 @@ export class GameService {
           GameService.game.rows = game.rows;
           GameService.game.users = game.users;
           console.log("Ovdje ", GameService.game.users);
-          this.storage.ready().then(() => {
-            this.storage.set("game", JSON.stringify(GameService.game)).then(value => {
-              console.log("game postavljeno", value);
-
-            });
+          this.storage.set("game", JSON.stringify(GameService.game)).then(value => {
+            console.log("game postavljeno", value);
           });
         } else if (game.cardValue) {
 

@@ -5,6 +5,7 @@ import { Game } from '../models/game';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ValueAccessor } from '@ionic/angular/dist/directives/control-value-accessors/value-accessor';
 
 @Component({
   selector: 'app-game',
@@ -42,16 +43,32 @@ export class GamePage implements OnInit {
   }
   ngAfterViewInit() {
     this.storage.ready().then(() => {
-      this.storage.get('game').then((val) => {
+      this.checkGameAsync().then((val) => {
         let valJson = JSON.parse(val);
         this.game = valJson;
         this.rows = valJson.rows;
         this.show = true;
         this._gameService.generateGrid();
       });
-      
     });
-    
+  }
+
+  public checkGameAsync(): Promise<string> {
+    return this.storage.get('game').then((val) => {
+      if (val) {
+        return val;
+      } else {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            this.checkGameAsync().then((val) => {
+              resolve(val);
+            }).catch(() => {
+              reject();
+            });
+          }, 1000);
+        })
+      }
+    });
   }
 
   flipCard(card: Card) {
