@@ -33,7 +33,7 @@ export class GameService {
   public numberList: number[];
   public list: Observable<number[]>;
   private serverUrl = "http://localhost:8080/ws";
-  public static serverIPAddress = null;
+  public static serverIPAddress = 'localhost:8080';
   private stompClient;
   private stompNewGameSubscription;
   private stompUserSubscription;
@@ -53,7 +53,7 @@ export class GameService {
   }
   initializeWebSocket() {
     if (GameService.serverIPAddress !== null) {
-      this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+      this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
     }
     let ws = new SockJS(this.serverUrl);
     this.stompClient = Stomp.over(ws);
@@ -77,7 +77,7 @@ export class GameService {
       GameService.isStarter = true;
       let ws = new SockJS(this.serverUrl);
       if (GameService.serverIPAddress !== null) {
-        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+        this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
         console.log("Adressa servera: ", this.serverUrl);
         console.log("IP servera: ", GameService.serverIPAddress);
       }
@@ -168,7 +168,7 @@ export class GameService {
 
       GameService.currentCode = userCode;
       if (GameService.serverIPAddress !== null) {
-        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+        this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
       }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
@@ -243,7 +243,7 @@ export class GameService {
 
       console.log("Join player:", GameService.gameJoin);
       if (GameService.serverIPAddress !== null) {
-        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+        this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
       }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
@@ -313,7 +313,7 @@ export class GameService {
     return new Promise((resolve, reject) => {
       //this.generateGrid();
       if (GameService.serverIPAddress !== null) {
-        this.serverUrl = `http://${GameService.serverIPAddress}:8080/ws`;
+        this.serverUrl = `http://${GameService.serverIPAddress}/ws`;
       }
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);

@@ -20,6 +20,13 @@
       <ion-item *ngIf="f.username.errors?.required && (loginForm.controls.username.dirty || submitAttempt)">
           <p>Username is required!</p>
       </ion-item>
+
+      <div>
+          <ion-item class="username-input ion-no-margin"  >
+              <ion-input formControlName="serverAddress" placeholder="Enter server address:" value="localhost:8080"  type="text" color="white" ></ion-input>
+          </ion-item>
+         
+      </div>
   
     <div class="ion-padding">
      
