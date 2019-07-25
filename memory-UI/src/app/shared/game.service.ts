@@ -317,16 +317,10 @@ export class GameService {
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       this.stompClient.connect({}, () => {
-        // this.stompClient.subscribe(
-        //   "/topic/room" + GameService.gameCode,
-        //   payload => {
-        //     this.handleGame(payload);
-        //     resolve(true);
-        //   });
-        this.stompClient.send("/app/memory/sendMove",
+      this.stompClient.send("/app/memory/sendMove",
           {},
           JSON.stringify({ userCode: GameService.currentCode, position: index })
-        );
+      );
 
 
       });
@@ -354,6 +348,7 @@ export class GameService {
           var game = JSON.parse(payload.body);
           GameService.game.rows = game.rows;
           GameService.game.users = game.users;
+          console.log("Ovdje ", GameService.game.users);
           this.storage.ready().then(() => {
             this.storage.set("game", JSON.stringify(GameService.game)).then(value => {
               console.log("game postavljeno", value);

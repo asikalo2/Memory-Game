@@ -55,12 +55,7 @@ export class GamePage implements OnInit {
   }
 
   flipCard(card: Card) {
-    // if(this._gameService.isGameOver()){
-    //   let winner = this._gameService.getWinner();
-    //   this.openSnackBar2(`Winner is ${winner}. Congrats`, 'Close');
-    // }
     if (!card.hidden) {
-    
       return;
     } else if (!GameService.isCurrentPlayer) {
       this.openSnackBar("Error!", "Not your turn!");
@@ -71,10 +66,19 @@ export class GamePage implements OnInit {
       return;
     } else {
       GameService.isSending = true;
-      
     }
 
+    var allConnected = true;
+    var users = GameService.game.users;
+    users.forEach(user => {  
+      if(user.username==null) {
+        allConnected=false;
+        this.openSnackBar("Error!", "Wait for other players!");
+        return;
+      }
+    });
 
+    if(allConnected) {
     let val = this._gameService.getCurrentValue(card.index).then((num) => {
       card.icon = this.iconMap['' + num];
 
@@ -83,7 +87,7 @@ export class GamePage implements OnInit {
 
     });;
 
-
+  }
 
     //card.hidden = false;
 

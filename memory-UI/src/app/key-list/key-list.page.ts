@@ -37,7 +37,7 @@ export class KeyListPage implements OnInit {
       for (let index = 1; index < number; index++) {
         el2.innerHTML += '<p style="margin-left: 5%" >Player ' + index + '  -  ' + GameService.gameStarter.users[index].code + '</p>'
       }
-    }, 5000);
+    }, 2000);
   }
   nextPage() {
     console.log(GameService.gameStarter);
