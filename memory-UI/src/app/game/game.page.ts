@@ -74,19 +74,6 @@ export class GamePage implements OnInit {
       
     }
 
-    this.storage.ready().then(() => {
-      this.storage.get('joinUser').then((valString) => {
-        let key = GameService.currentCode;
-        let username = GameService.username;
-        this._gameService.getValueOfCard(card.index);
-        if (!this.open1) {
-          this.open1 = true;
-        } else if (!this.open2) {
-          this.open2 = true;
-        }
-
-      });
-    });
 
     let val = this._gameService.getCurrentValue(card.index).then((num) => {
       card.icon = this.iconMap['' + num];
